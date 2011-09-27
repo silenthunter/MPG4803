@@ -22,25 +22,33 @@ projMatrix = [1 0 0 0;
     0 0 1 0;
     cameraLookAt - cameraPos 1];
 
-ang = 0;
 %X rotation
+a = [0 0 1];
+b = cameraPos - objectPos; b(1) = 0;
+ang = -atan2(norm(cross(a,b)),dot(a,b));
 projMatrix = projMatrix * [1 0 0 0;
     0 cos(ang) sin(ang) 0;
     0 -sin(ang) cos(ang) 0;
     0 0 0 1];
 
 %Y rotation
+a = [0 0 1];
+b = cameraPos - objectPos; b(2) = 0;
+ang = -atan2(norm(cross(a,b)),dot(a,b));
 projMatrix = projMatrix * [cos(ang) 0 -sin(ang) 0
     0 1 0 0;
     sin(ang) 0 cos(ang) 0;
     0 0 0 1];
 
 %Z rotation
-ang = pi;
-projMatrix = projMatrix * [ cos(ang) sin(ang) 0 0;
-    -sin(ang) cos(ang) 0 0;
-    0 0 1 0;
-    0 0 0 1;];
+%ang = pi;
+% a = [0 0 1];
+% b = cameraPos - objectPos; b(3) = 0;
+% ang = 0;%-atan2(norm(cross(a,b)),dot(a,b));
+% projMatrix = projMatrix * [ cos(ang) sin(ang) 0 0;
+%     -sin(ang) cos(ang) 0 0;
+%     0 0 1 0;
+%     0 0 0 1;];
 
 %Projections
 projMatrix = projMatrix * [1/ratio * cot(fov/2) 0 0 0;
