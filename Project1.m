@@ -1,7 +1,17 @@
+% function [retn] = lightMult(l1, l2)
+% retn = [l1(1) * l2(1) l1(2) * l2(2) l1(3) * l2(3)];
+
 %Global vars
-lightCoord = [0 0 0];
+
+%lighting
+lightPos = [0 0 0];
 lightColor = [1 0 1];
-ambient = [.1 .1 .1];
+ambient = [.3 .3 .3];
+emissiveMat = [1 1 1];
+ambientMat = [1 1 1];
+diffuseMat = [1 1 1];
+specularMat = [1 1 1];
+
 cameraPos = [0 0 -10];
 cameraLookAt = [0 0 0];
 objectPos = [0 0 0];
@@ -75,7 +85,16 @@ for i = 1:length(A)
     v2 = points(3, 1:3) - points(1, 1:3);
     normal = cross(v1, v2);
     dotProd = dot(normal, cameraPos - points(1, 1:3));
+    
+    %do lighting
+    %ambient
+    lighting = [ambient(1) * ambientMat(1) ambient(2) * ambientMat(2) ambient(3) * ambientMat(3)];
+    
+    %diffuse
+    maxVal = max(dot(points(1, 1:3) - lightPos, normal), 0);
+    cDiff = maxVal * [diffuse(1) * diffuseMat(1) diffuse(2) * diffuseMat(2) diffuse(3) * diffuseMat(3)];
+    
     if(dotProd < 0)
-        patch(points(:,1), points(:,2), [1 0 0]);
+        patch(points(:,1), points(:,2), lighting);
     end
 end
