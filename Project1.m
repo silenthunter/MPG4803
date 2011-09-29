@@ -4,13 +4,14 @@
 %Global vars
 
 %lighting
-lightPos = [0 0 0];
+lightPos = [0 0 -10];
 lightColor = [1 0 1];
 ambient = [.3 .3 .3];
-emissiveMat = [1 1 1];
+emissiveMat = [.1 .1 .1];
 ambientMat = [1 1 1];
 diffuseMat = [1 1 1];
 specularMat = [1 1 1];
+S = 1;
 
 cameraPos = [0 0 -10];
 cameraLookAt = [0 0 0];
@@ -92,7 +93,21 @@ for i = 1:length(A)
     
     %diffuse
     maxVal = max(dot(points(1, 1:3) - lightPos, normal), 0);
-    cDiff = maxVal * [diffuse(1) * diffuseMat(1) diffuse(2) * diffuseMat(2) diffuse(3) * diffuseMat(3)];
+    cDiff = maxVal * [lightColor(1) * diffuseMat(1) lightColor(2) * diffuseMat(2) lightColor(3) * diffuseMat(3)];
+    lighting = lighting + cDiff;
+    
+    %specular
+    v1 = points(1, 1:3) - lightPos;
+    v2 = points(1, 1:3) - cameraPos;
+    hNorm = cross(v1, v2);
+    cSpec = max(dot(normal, hNorm), 0) ^ S * [lightColor(1) * specularMat(1) lightColor(2) * specularMat(2) lightColor(3) * specularMat(3)];
+    lighting = lighting + cSpec;
+    
+    %emissive
+    lighting = lighting + emissiveMat;
+    
+    %clamp light vals
+    lighting(:) = min(lighting(:), 1);
     
     if(dotProd < 0)
         patch(points(:,1), points(:,2), lighting);
