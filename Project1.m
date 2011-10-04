@@ -7,16 +7,15 @@
 lightPos = [0 0 -10];
 lightColor = [1 0 1];
 ambient = [.3 .3 .3];
-emissiveMat = [.1 .1 .1];
-ambientMat = [1 1 1];
+emissiveMat = [0 0 0];
+ambientMat = [0 0 0];
 diffuseMat = [1 1 1];
-specularMat = [1 1 1];
-S = 1;
+specularMat = [0 0 0];
 
-cameraPos = [0 0 -10];
+cameraPos = [0 0 8];
 cameraLookAt = [0 0 0];
 objectPos = [0 0 0];
-objectOri = [0 0 0];
+objectOri = [0 0 0 1];
 fov = 90.0;
 near = 1;
 far = 100;
@@ -35,31 +34,23 @@ projMatrix = [1 0 0 0;
 
 %X rotation
 a = [0 0 1];
-b = cameraPos - objectPos; b(1) = 0;
-ang = -atan2(norm(cross(a,b)),dot(a,b));
-projMatrix = projMatrix * [1 0 0 0;
+b = -cameraPos + cameraLookAt; b(1) = 0;
+ang = atan2(norm(cross(a,b)),dot(a,b));
+xRot =[1 0 0 0;
     0 cos(ang) sin(ang) 0;
     0 -sin(ang) cos(ang) 0;
     0 0 0 1];
+projMatrix = projMatrix * xRot;
 
 %Y rotation
 a = [0 0 1];
-b = cameraPos - objectPos; b(2) = 0;
-ang = -atan2(norm(cross(a,b)),dot(a,b));
+newLook = [-cameraPos + cameraLookAt 1] * xRot;
+b = newLook(1:3); b(2) = 0;
+ang = atan2(norm(cross(a,b)),dot(a,b));
 projMatrix = projMatrix * [cos(ang) 0 -sin(ang) 0
     0 1 0 0;
     sin(ang) 0 cos(ang) 0;
     0 0 0 1];
-
-%Z rotation
-%ang = pi;
-% a = [0 0 1];
-% b = cameraPos - objectPos; b(3) = 0;
-% ang = 0;%-atan2(norm(cross(a,b)),dot(a,b));
-% projMatrix = projMatrix * [ cos(ang) sin(ang) 0 0;
-%     -sin(ang) cos(ang) 0 0;
-%     0 0 1 0;
-%     0 0 0 1;];
 
 %Projections
 projMatrix = projMatrix * [1/ratio * cot(fov/2) 0 0 0;
@@ -67,23 +58,37 @@ projMatrix = projMatrix * [1/ratio * cot(fov/2) 0 0 0;
     0 0 far / (far - near) 1;
     0 0 -(far * near / (far - near)) 0];
 
+%View Matrix
+%X
+ang = objectOri(1);
+viewMatrix = [cos(ang) sin(ang) 0 0;
+    -sin(ang) cos(ang) 0 0;
+    0 0 1 0;
+    0 0 0 1];
+%Y
+ang = objectOri(2);
+viewMatrix = viewMatrix * [cos(ang) 0 -sin(ang) 0;
+    0 1 0 0;
+    sin(ang) 0 cos(ang) 0;
+    0 0 0 1];
+
+%Z
+ang = objectOri(3);
+viewMatrix = viewMatrix * [1 0 0 0;
+    0 cos(ang) sin(ang) 0;
+    0 -sin(ang) cos(ang) 0;
+    0 0 0 1];
+
 for i = 1:length(A)
     %get the correct triangle
     points = [A(i, 1:3) 1; A(i, 4:6) 1; A(i, 7:9) 1];
-    points = points * projMatrix;
-    
-    if points(1, 3) <= 0 || points(2, 3) <= 0 || points(3, 3) <= 0
-        continue;
-    end
-    
-    %Divide by W
-    for j = 1:length(points(:,1))
-        points(j, 1:3) = points(j, 1:3) / points(j, 4);
-    end
+    points = points * viewMatrix;
     
     %back-cull
     v1 = points(2, 1:3) - points(1, 1:3);
     v2 = points(3, 1:3) - points(1, 1:3);
+    v1 = v1 / norm(v1);
+    v2 = v2 / norm(v2);
     normal = cross(v1, v2);
     dotProd = dot(normal, cameraPos - points(1, 1:3));
     
@@ -108,6 +113,18 @@ for i = 1:length(A)
     
     %clamp light vals
     lighting(:) = min(lighting(:), 1);
+    
+    %projection
+    points = points * projMatrix;
+    
+    if points(1, 3) <= 0 || points(2, 3) <= 0 || points(3, 3) <= 0
+        continue;
+    end
+    
+    %Divide by W
+    for j = 1:length(points(:,1))
+        points(j, 1:3) = points(j, 1:3) / points(j, 4);
+    end
     
     if(dotProd < 0)
         patch(points(:,1), points(:,2), lighting);
