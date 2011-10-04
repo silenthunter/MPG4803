@@ -13,10 +13,10 @@ diffuseMat = [.05 .05 .05];
 specularMat = [.3 .3 .3];
 S = 4;
 
-cameraPos = [0 0 8];
+cameraPos = [0 0 -8];
 cameraLookAt = [0 0 0];
 objectPos = [0 0 0];
-objectOri = [0 0 0 1];
+objectOri = [0 0 pi 1];
 fov = 90.0;
 near = 1;
 far = 100;
@@ -35,23 +35,24 @@ projMatrix = [1 0 0 0;
 
 %X rotation
 a = [0 0 1];
-b = -cameraPos + cameraLookAt; b(1) = 0;
-ang = atan2(norm(cross(a,b)),dot(a,b));
-xRot =[1 0 0 0;
-    0 cos(ang) sin(ang) 0;
-    0 -sin(ang) cos(ang) 0;
+b = -cameraPos + cameraLookAt; b(2) = 0;
+ang = -atan2(norm(cross(a,b)),dot(a,b));
+xRot = [cos(ang) 0 -sin(ang) 0
+    0 1 0 0;
+    sin(ang) 0 cos(ang) 0;
     0 0 0 1];
 projMatrix = projMatrix * xRot;
 
 %Y rotation
 a = [0 0 1];
 newLook = [-cameraPos + cameraLookAt 1] * xRot;
-b = newLook(1:3); b(2) = 0;
-ang = atan2(norm(cross(a,b)),dot(a,b));
-projMatrix = projMatrix * [cos(ang) 0 -sin(ang) 0
-    0 1 0 0;
-    sin(ang) 0 cos(ang) 0;
+b = newLook(1:3); b(1) = 0;
+ang = -atan2(norm(cross(a,b)),dot(a,b));
+yRot =[1 0 0 0;
+    0 cos(ang) sin(ang) 0;
+    0 -sin(ang) cos(ang) 0;
     0 0 0 1];
+projMatrix = projMatrix * yRot;
 
 %Projections
 projMatrix = projMatrix * [1/ratio * cot(fov/2) 0 0 0;
