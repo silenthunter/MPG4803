@@ -5,12 +5,13 @@
 
 %lighting
 lightPos = [0 0 -10];
-lightColor = [1 0 1];
+lightColor = [1 1 1];
 ambient = [.3 .3 .3];
 emissiveMat = [0 0 0];
-ambientMat = [0 0 0];
-diffuseMat = [1 1 1];
-specularMat = [0 0 0];
+ambientMat = [.5 .5 .5];
+diffuseMat = [.05 .05 .05];
+specularMat = [.3 .3 .3];
+S = 4;
 
 cameraPos = [0 0 8];
 cameraLookAt = [0 0 0];
@@ -90,22 +91,24 @@ for i = 1:length(A)
     v1 = v1 / norm(v1);
     v2 = v2 / norm(v2);
     normal = cross(v1, v2);
-    dotProd = dot(normal, cameraPos - points(1, 1:3));
+    normal = normal / norm(normal);
+    dotProd = dot(normal, cameraPos - mean(points(:, 1:3)));
     
-    %do lighting
+    %do lighting----------------------------------------------
     %ambient
-    lighting = [ambient(1) * ambientMat(1) ambient(2) * ambientMat(2) ambient(3) * ambientMat(3)];
+    lighting = ambient .* ambientMat;
     
     %diffuse
     maxVal = max(dot(points(1, 1:3) - lightPos, normal), 0);
-    cDiff = maxVal * [lightColor(1) * diffuseMat(1) lightColor(2) * diffuseMat(2) lightColor(3) * diffuseMat(3)];
+    cDiff = maxVal * lightColor .* diffuseMat;
     lighting = lighting + cDiff;
     
     %specular
-    v1 = points(1, 1:3) - lightPos;
-    v2 = points(1, 1:3) - cameraPos;
-    hNorm = cross(v1, v2);
-    cSpec = max(dot(normal, hNorm), 0) ^ S * [lightColor(1) * specularMat(1) lightColor(2) * specularMat(2) lightColor(3) * specularMat(3)];
+    v1 = mean(points(:, 1:3)) - lightPos;
+    v2 = mean(points(:, 1:3)) - cameraPos;
+    hNorm = (v1 + v2) ./ abs(v1 + v2);
+    hNorm = hNorm / norm(hNorm);
+    cSpec = max(dot(normal, hNorm), 0) ^ S * lightColor .* specularMat;
     lighting = lighting + cSpec;
     
     %emissive
@@ -127,6 +130,7 @@ for i = 1:length(A)
     end
     
     if(dotProd < 0)
-        patch(points(:,1), points(:,2), lighting);
+        patch(points(:,1), points(:,2), lighting, 'EdgeColor', 'none');
+        %patch(points(:,1), points(:,2), lighting);
     end
 end
