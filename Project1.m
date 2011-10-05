@@ -1,6 +1,3 @@
-% function [retn] = lightMult(l1, l2)
-% retn = [l1(1) * l2(1) l1(2) * l2(2) l1(3) * l2(3)];
-
 %Global vars
 
 %lighting
@@ -27,11 +24,11 @@ size = 1;
 axis([-size size -size size]);
 axis square;
 
-%translate
+%translate to origin
 projMatrix = [1 0 0 0;
     0 1 0 0;
     0 0 1 0;
-    cameraLookAt - cameraPos 1];
+    [0 0 0] - objectPos 1];
 
 %X rotation
 a = [0 0 1];
@@ -53,6 +50,18 @@ yRot =[1 0 0 0;
     0 -sin(ang) cos(ang) 0;
     0 0 0 1];
 projMatrix = projMatrix * yRot;
+
+%translate from origin
+projectMatrix = projMatrix * [1 0 0 0;
+    0 1 0 0;
+    0 0 1 0;
+    objectPos - [0 0 0] 1];
+
+%translate
+projMatrix = projMatrix * [1 0 0 0;
+    0 1 0 0;
+    0 0 1 0;
+    0 0 pdist([cameraPos;cameraLookAt]) 1];
 
 %Projections
 projMatrix = projMatrix * [1/ratio * cot(fov/2) 0 0 0;
@@ -121,13 +130,14 @@ for i = 1:length(A)
     %projection
     points = points * projMatrix;
     
-    if points(1, 3) <= 0 || points(2, 3) <= 0 || points(3, 3) <= 0
-        continue;
-    end
-    
     %Divide by W
     for j = 1:length(points(:,1))
         points(j, 1:3) = points(j, 1:3) / points(j, 4);
+    end
+    
+    %Remove points with Z <= 0
+    if points(1, 3) <= 0 || points(2, 3) <= 0 || points(3, 3) <= 0
+        continue;
     end
     
     if(dotProd < 0)
