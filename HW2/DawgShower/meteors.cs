@@ -15,20 +15,22 @@ namespace DawgShower
     /// </summary>
     public class meteors : Microsoft.Xna.Framework.DrawableGameComponent
     {
-        protected Texture2D texture;
+        protected Model asteroidModel;
         protected Rectangle spriteRectangle;
         protected Vector2 position;
         protected int Yspeed;
         protected int Xspeed;
         protected Random random;
+        protected Vector2 rotationSpeeds;
+        protected float rotX, rotY;
 
         protected const int METEORWIDTH = 58; //45;
         protected const int METEORHEIGHT = 66; //45;
 
-        public meteors(Game game, ref Texture2D theTexture)
+        public meteors(Game game, ref Model theModel)
             : base(game)
         {
-            texture = theTexture;
+            asteroidModel = theModel;
             position = new Vector2();
 
             // TODO: Construct any child components here
@@ -36,6 +38,9 @@ namespace DawgShower
             spriteRectangle = new Rectangle(0, 0, METEORWIDTH, METEORHEIGHT);
             random = new Random(this.GetHashCode());
             PutinStartPosition();
+
+            rotationSpeeds = new Vector2(random.Next(10), random.Next(10));
+            rotationSpeeds.Normalize();
         }
 
         protected void PutinStartPosition()
@@ -73,21 +78,39 @@ namespace DawgShower
             position.Y += Yspeed;
             position.X += Xspeed;
 
+            rotX += rotationSpeeds.X;
+            rotY += rotationSpeeds.Y;
+
             base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
-            SpriteBatch sBatch =
-                (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
-
-            sBatch.Draw(texture, position, spriteRectangle, Color.White);
+            Vector3 Pos = new Vector3(position.X, -position.Y, -20);
+            //Draw space ship
+            foreach (ModelMesh mesh in asteroidModel.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.World = Matrix.CreateScale(2f) *  Matrix.CreateRotationX(MathHelper.ToRadians(rotX)) *
+                         Matrix.CreateRotationY(MathHelper.ToRadians(rotY)) *
+                        Matrix.CreateRotationZ(MathHelper.ToRadians(180f)) * Matrix.CreateTranslation(Pos);
+                    effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 10),
+                        Vector3.Zero,
+                        Vector3.Up);
+                    effect.Projection = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width,
+                        -GraphicsDevice.Viewport.Height, 0, 1f, 200f);
+                }
+                mesh.Draw();
+            }
 
             base.Draw(gameTime);
         }
 
         public bool CheckCollision(Rectangle rect)
         {
+            return false;
             Rectangle spriterect = new Rectangle((int)position.X, (int)position.Y, METEORWIDTH, METEORHEIGHT);
             return spriterect.Intersects(rect);
         }

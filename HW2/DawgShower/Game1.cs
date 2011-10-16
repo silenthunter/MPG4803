@@ -21,12 +21,12 @@ namespace DawgShower
         private Texture2D backgroundTexture;
         private Texture2D[] backgroundTextureOptions;
         private Texture2D gameoverTexture;
-        private Texture2D meteorTexture;
         private Texture2D leeTexture;
         private Texture2D missileTexture;
         private Texture2D pauseTexture;
         private Texture2D pause2Texture;
         private Model shipModel;
+        private Model asteroidModel;
         private int pauseCtr;
 
         private ship player;
@@ -124,13 +124,15 @@ namespace DawgShower
             //Load ship
             shipModel = Content.Load<Model>("Ship");
 
+            //Load asteroid
+            asteroidModel = Content.Load<Model>("asteroid");
+
             // Earth to be used as the default
             backgroundTexture = backgroundTextureOptions[0];
 
             // Set up textures for game pause
             pauseTexture = Content.Load<Texture2D>("pause"); 
             pause2Texture = Content.Load<Texture2D>("pauseR");      
-            meteorTexture = Content.Load<Texture2D>("Goo2");
 
 #if GT
             leeTexture = Content.Load<Texture2D>("buzz");
@@ -172,7 +174,7 @@ namespace DawgShower
 
             for (int i = 0; i < STARTMETEORCOUNT; i++)
             {
-                Components.Add(new meteors(this, ref meteorTexture));
+                Components.Add(new meteors(this, ref asteroidModel));
             }
         }
 
@@ -250,7 +252,7 @@ namespace DawgShower
             if ((System.Environment.TickCount - lastTickCount) > ADDMETEORTIME)
             {
                 lastTickCount = System.Environment.TickCount;
-                 Components.Add(new meteors(this, ref meteorTexture));
+                Components.Add(new meteors(this, ref asteroidModel));
                 rockCount++;
 
                 audioComponent.PlayCue("newmeteor");
