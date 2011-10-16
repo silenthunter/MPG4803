@@ -17,7 +17,7 @@ namespace DawgShower
     /// </summary>
     public class ship : Microsoft.Xna.Framework.DrawableGameComponent
     {
-        protected Texture2D texture;
+        protected Model shipModel;
         protected Rectangle spriteRectangle;
         protected Vector2 position;
         protected bool shoot;
@@ -34,11 +34,11 @@ namespace DawgShower
         // Screen Area
         protected Rectangle screenBounds;
 
-        public ship(Game game, ref Texture2D theTexture)
+        public ship(Game game, ref Model theModel)
             : base(game)
         {
             // TODO: Construct any child components here
-            texture = theTexture;
+            shipModel = theModel;
             position = new Vector2();
             shoot = false;
            
@@ -130,9 +130,25 @@ namespace DawgShower
 
         public override void Draw(GameTime gameTime)
         {
-            SpriteBatch sBatch = (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
-
-            sBatch.Draw(texture, position, spriteRectangle, Color.White);
+            Vector3 Pos = new Vector3(position.X, -position.Y, -20);
+            //Draw space ship
+            Matrix[] transforms = new Matrix[shipModel.Bones.Count];
+            shipModel.CopyAbsoluteBoneTransformsTo(transforms);
+            foreach (ModelMesh mesh in shipModel.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.World = Matrix.CreateScale(2f) * transforms[mesh.ParentBone.Index] * Matrix.CreateRotationX(MathHelper.ToRadians(90f)) *
+                        Matrix.CreateRotationZ(MathHelper.ToRadians(180f)) * Matrix.CreateTranslation(Pos);
+                    effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 10), 
+                        Vector3.Zero, 
+                        Vector3.Up);
+                    effect.Projection = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width,
+                        -GraphicsDevice.Viewport.Height, 0, 1f, 200f);
+                }
+                mesh.Draw();
+            }
 
             base.Draw(gameTime);
         }

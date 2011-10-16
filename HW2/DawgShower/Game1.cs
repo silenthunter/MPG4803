@@ -26,6 +26,7 @@ namespace DawgShower
         private Texture2D missileTexture;
         private Texture2D pauseTexture;
         private Texture2D pause2Texture;
+        private Model shipModel;
         private int pauseCtr;
 
         private ship player;
@@ -120,6 +121,9 @@ namespace DawgShower
             backgroundTextureOptions[2] = Content.Load<Texture2D>("startbackground");
             backgroundTextureOptions[3] = Content.Load<Texture2D>("Spacebackground");
 
+            //Load ship
+            shipModel = Content.Load<Model>("Ship");
+
             // Earth to be used as the default
             backgroundTexture = backgroundTextureOptions[0];
 
@@ -158,7 +162,7 @@ namespace DawgShower
         {
             if (player == null)
             {
-                player = new ship(this, ref leeTexture);
+                player = new ship(this, ref shipModel);
                 Components.Add(player);
                 lastTickCount = System.Environment.TickCount;
             }
@@ -386,7 +390,6 @@ namespace DawgShower
             }
         }
 
-        
         protected override void Draw(GameTime gameTime)
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -442,9 +445,11 @@ namespace DawgShower
             }
 
             spriteBatch.End();
+
             spriteBatch.Begin(SpriteSortMode.BackToFront,BlendState.AlphaBlend);
             base.Draw(gameTime);
             spriteBatch.End();
+
         }
     }
 }
