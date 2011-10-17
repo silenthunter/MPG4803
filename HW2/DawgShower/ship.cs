@@ -21,6 +21,11 @@ namespace DawgShower
         protected Rectangle spriteRectangle;
         protected Vector2 position;
         protected bool shoot;
+        protected float shootDelay = 250;
+        protected float elapsedSinceShoot;
+        protected float shipRotation = 0f;
+        protected float maxShipRotation = 30f;
+        protected float rotationRate = 2f;
         
 #if GT
         // for GT Buzz
@@ -69,13 +74,15 @@ namespace DawgShower
         public override void Update(GameTime gameTime)
         {
             KeyboardState keyboard = Keyboard.GetState();
+            elapsedSinceShoot += gameTime.ElapsedGameTime.Milliseconds;
             
             // Move the ship with keyboard
-            if (!shoot)
+            if (!shoot && elapsedSinceShoot >= shootDelay)
             {
                 if (keyboard.IsKeyDown(Keys.Space))
                 {
                       shoot = true;
+                      elapsedSinceShoot = 0;
                 }
             }
 
@@ -87,13 +94,22 @@ namespace DawgShower
             {
                 position.Y += 3;
             }
+
             if (keyboard.IsKeyDown(Keys.Left))
             {
                 position.X -= 3;
+                shipRotation += rotationRate;
+                if (shipRotation > maxShipRotation) shipRotation = maxShipRotation;
             }
-            if (keyboard.IsKeyDown(Keys.Right))
+            else if (keyboard.IsKeyDown(Keys.Right))
             {
                 position.X += 3;
+                shipRotation -= rotationRate;
+                if (shipRotation < -maxShipRotation) shipRotation = -maxShipRotation;
+            }
+            else
+            {
+                shipRotation *= .9f;
             }
 
             if (position.X < screenBounds.Left)
@@ -140,6 +156,7 @@ namespace DawgShower
                 {
                     effect.EnableDefaultLighting();
                     effect.World = Matrix.CreateScale(2f) * transforms[mesh.ParentBone.Index] * Matrix.CreateRotationX(MathHelper.ToRadians(90f)) *
+                        Matrix.CreateRotationY(MathHelper.ToRadians(shipRotation)) *
                         Matrix.CreateRotationZ(MathHelper.ToRadians(180f)) * Matrix.CreateTranslation(Pos);
                     effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 10), 
                         Vector3.Zero, 

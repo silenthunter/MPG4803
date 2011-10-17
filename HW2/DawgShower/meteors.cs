@@ -87,7 +87,7 @@ namespace DawgShower
         public override void Draw(GameTime gameTime)
         {
             Vector3 Pos = new Vector3(position.X, -position.Y, -20);
-            //Draw space ship
+            //Draw asteroid
             foreach (ModelMesh mesh in asteroidModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)

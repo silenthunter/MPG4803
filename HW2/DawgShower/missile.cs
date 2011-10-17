@@ -15,7 +15,7 @@ namespace DawgShower
     /// </summary>
     public class missile : Microsoft.Xna.Framework.DrawableGameComponent
     {
-        protected Texture2D texture;
+        protected Model missileModel;
         protected Vector2 position;
         protected Rectangle spriteRectangle;
         protected Random random;
@@ -29,10 +29,10 @@ namespace DawgShower
         protected const int MISSILEHEIGHT = 56;
 #endif
 
-        public missile(Game game, ref Texture2D theTexture, Vector2 playerPosition)
+        public missile(Game game, ref Model theModel, Vector2 playerPosition)
             : base(game)
         {
-            texture = theTexture;
+            missileModel = theModel;
             position = new Vector2();
 
             // TODO: Construct any child components            here
@@ -49,8 +49,8 @@ namespace DawgShower
         
         protected void PutinStartPosition(Vector2 playerPosition)
         {
-            position = playerPosition;
-            Yspeed = 50;// +random.Next(7);
+            position = playerPosition + new Vector2(20, -10);
+            Yspeed = 10;// +random.Next(7);
             Xspeed = random.Next(3) - 1;
         }
         public override void Initialize()
@@ -85,10 +85,23 @@ namespace DawgShower
 
         public override void Draw(GameTime gameTime)
         {
-            SpriteBatch sBatch =
-                (SpriteBatch)Game.Services.GetService(typeof(SpriteBatch));
-
-            sBatch.Draw(texture, position, spriteRectangle, Color.White);
+            Vector3 Pos = new Vector3(position.X, -position.Y, -20);
+            //Draw missile
+            foreach (ModelMesh mesh in missileModel.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.World = Matrix.CreateScale(.5f) *
+                        Matrix.CreateRotationZ(MathHelper.ToRadians(180f)) * Matrix.CreateTranslation(Pos);
+                    effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 10),
+                        Vector3.Zero,
+                        Vector3.Up);
+                    effect.Projection = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width,
+                        -GraphicsDevice.Viewport.Height, 0, 1f, 200f);
+                }
+                mesh.Draw();
+            }
 
             base.Draw(gameTime);
         }

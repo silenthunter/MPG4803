@@ -22,11 +22,11 @@ namespace DawgShower
         private Texture2D[] backgroundTextureOptions;
         private Texture2D gameoverTexture;
         private Texture2D leeTexture;
-        private Texture2D missileTexture;
         private Texture2D pauseTexture;
         private Texture2D pause2Texture;
         private Model shipModel;
         private Model asteroidModel;
+        private Model missileModel;
         private int pauseCtr;
 
         private ship player;
@@ -127,6 +127,9 @@ namespace DawgShower
             //Load asteroid
             asteroidModel = Content.Load<Model>("asteroid");
 
+            //Load Missile
+            missileModel = Content.Load<Model>("missile");
+
             // Earth to be used as the default
             backgroundTexture = backgroundTextureOptions[0];
 
@@ -136,7 +139,6 @@ namespace DawgShower
 
 #if GT
             leeTexture = Content.Load<Texture2D>("buzz");
-            missileTexture = Content.Load<Texture2D>("helmet");
 #else
             leeTexture = Content.Load<Texture2D>("leeporN3");
             missileTexture = Content.Load<Texture2D>("leePhantom");
@@ -184,7 +186,7 @@ namespace DawgShower
             if (player.shootMissile())
             {
                 audioComponent.PlayCue("shoot");
-                Components.Add(new missile(this, ref missileTexture, player.GetPosition())); 
+                Components.Add(new missile(this, ref missileModel, player.GetPosition())); 
                 player.resetShoot();    
             }
     
