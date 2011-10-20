@@ -317,7 +317,7 @@ namespace DawgShower
         private void DoGameLogic()
         {
             bool hasCollision = false;
-            Rectangle shipRectangle = player.GetBounds();
+            BoundingSphere shipRectangle = player.GetBounds();
 
             foreach (GameComponent gc in Components)
             {

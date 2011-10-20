@@ -21,6 +21,7 @@ namespace DawgShower
         protected Random random;
         protected int Yspeed;
         protected int Xspeed;
+        protected BoundingSphere bounding;
 #if GT
         protected const int MISSILEWIDTH = 75;  // for GT helmet
         protected const int MISSILEHEIGHT = 56;
@@ -53,6 +54,7 @@ namespace DawgShower
             spriteRectangle = new Rectangle(0, 0, MISSILEWIDTH, MISSILEHEIGHT);
             random = new Random(this.GetHashCode());
             PutinStartPosition(playerPosition);
+            bounding = missileModel.Meshes[0].BoundingSphere;
         }
 
         /// <summary>
@@ -78,9 +80,15 @@ namespace DawgShower
             return position;
         }
 
-        public Rectangle GetBounds()
+        public BoundingSphere GetBounds()
         {
-            return new Rectangle((int)position.X, (int)position.Y, MISSILEWIDTH, MISSILEHEIGHT);
+            Vector3 Pos = new Vector3(position.X, -position.Y, -20);
+            BoundingSphere retn;
+            Matrix transform = Matrix.CreateScale(.5f) *
+                        Matrix.CreateRotationZ(MathHelper.ToRadians(180f)) * Matrix.CreateTranslation(Pos);
+
+            bounding.Transform(ref transform, out retn);
+            return retn;
         }
 
         /// <summary>
@@ -119,11 +127,9 @@ namespace DawgShower
             base.Draw(gameTime);
         }
 
-        public bool CheckCollision(Rectangle rect)
+        public bool CheckCollision(BoundingSphere sphere)
         {
-            Rectangle spriterect = new Rectangle((int)position.X, (int)position.Y, 
-                                                MISSILEWIDTH, MISSILEHEIGHT);
-            return spriterect.Intersects(rect);
+            return sphere.Intersects(bounding);
         }
     }
 }

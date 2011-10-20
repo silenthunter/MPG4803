@@ -27,6 +27,7 @@ namespace DawgShower
         protected float shipRotation = 0f;
         protected float maxShipRotation = 30f;
         protected float rotationRate = 2f;
+        protected BoundingSphere bounding;
         
 #if GT
         // for GT Buzz
@@ -50,6 +51,7 @@ namespace DawgShower
            
             //spriteRectangle = new Rectangle(31, 83, SHIPWIDTH, SHIPHEIGHT);
             spriteRectangle = new Rectangle(0, 0, SHIPWIDTH, SHIPHEIGHT);
+            bounding = shipModel.Meshes[0].BoundingSphere;
 
 #if XBOX360
 
@@ -180,9 +182,16 @@ namespace DawgShower
             base.Draw(gameTime);
         }
 
-        public Rectangle GetBounds()
+        public BoundingSphere GetBounds()
         {
-            return new Rectangle((int)position.X, (int)position.Y, SHIPWIDTH, SHIPHEIGHT);
+            Vector3 Pos = new Vector3(position.X, -position.Y, -20);
+            BoundingSphere retn;
+            Matrix transform = Matrix.CreateScale(2f) * Matrix.CreateRotationX(MathHelper.ToRadians(90f)) *
+                        Matrix.CreateRotationY(MathHelper.ToRadians(shipRotation)) *
+                        Matrix.CreateRotationZ(MathHelper.ToRadians(180f)) * Matrix.CreateTranslation(Pos);
+
+            bounding.Transform(ref transform, out retn);
+            return retn;
         }
 
         public void resetShoot()
