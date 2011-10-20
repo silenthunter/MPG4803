@@ -21,6 +21,7 @@ namespace DawgShower
         protected Rectangle spriteRectangle;
         protected Vector2 position;
         protected bool shoot;
+        protected bool barrage;
         protected float shootDelay = 250;
         protected float elapsedSinceShoot;
         protected float shipRotation = 0f;
@@ -83,6 +84,15 @@ namespace DawgShower
                 {
                       shoot = true;
                       elapsedSinceShoot = 0;
+                }
+            }
+
+            if (!barrage && elapsedSinceShoot >= shootDelay)
+            {
+                if (keyboard.IsKeyDown(Keys.LeftControl))
+                {
+                    barrage = true;
+                    elapsedSinceShoot = 0;
                 }
             }
 
@@ -178,11 +188,17 @@ namespace DawgShower
         public void resetShoot()
         {
             shoot = false;
+            barrage = false;
         }
 
         public bool shootMissile()
         {
             return shoot;
+        }
+
+        public bool barrageMissile()
+        {
+            return barrage;
         }
     }
 }

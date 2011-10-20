@@ -189,6 +189,20 @@ namespace DawgShower
                 Components.Add(new missile(this, ref missileModel, player.GetPosition())); 
                 player.resetShoot();    
             }
+
+            //Fire missile barrage
+            if (player.barrageMissile())
+            {
+                audioComponent.PlayCue("shoot");
+                Vector2 velocity = new Vector2(-10, 0);
+                Matrix rotate = Matrix.CreateRotationZ(MathHelper.ToRadians(-18f));
+                for (int i = 0; i < 10; i++)
+                {
+                    Components.Add(new missile(this, ref missileModel, player.GetPosition(), velocity));
+                    velocity = Vector2.Transform(velocity, rotate);
+                }
+                player.resetShoot();
+            }
     
             // The following code remove missile component when it is moved out of the screen
             for (int i=0; i<Components.Count; i++)

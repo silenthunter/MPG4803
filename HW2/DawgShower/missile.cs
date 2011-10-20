@@ -32,6 +32,19 @@ namespace DawgShower
         public missile(Game game, ref Model theModel, Vector2 playerPosition)
             : base(game)
         {
+            init(game, ref theModel, playerPosition);
+        }
+
+        public missile(Game game, ref Model theModel, Vector2 playerPosition, Vector2 velocity)
+            : base(game)
+        {
+            init(game, ref theModel, playerPosition);
+            Xspeed = (int)velocity.X;
+            Yspeed = (int)velocity.Y;
+        }
+
+        private void init(Game game, ref Model theModel, Vector2 playerPosition)
+        {
             missileModel = theModel;
             position = new Vector2();
 
