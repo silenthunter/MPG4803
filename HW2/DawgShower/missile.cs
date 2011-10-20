@@ -107,13 +107,17 @@ namespace DawgShower
         public override void Draw(GameTime gameTime)
         {
             Vector3 Pos = new Vector3(position.X, -position.Y, -20);
+            Vector2 velNorm = new Vector2(Xspeed, Yspeed);
+            velNorm.Normalize();
+            float angle = (float)Math.Atan2(velNorm.Y - 1f, velNorm.X);
+
             //Draw missile
             foreach (ModelMesh mesh in missileModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
-                    effect.World = Matrix.CreateScale(.5f) *
+                    effect.World = Matrix.CreateScale(.5f) * Matrix.CreateRotationZ(angle) *
                         Matrix.CreateRotationZ(MathHelper.ToRadians(180f)) * Matrix.CreateTranslation(Pos);
                     effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 10),
                         Vector3.Zero,
