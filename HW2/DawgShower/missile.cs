@@ -64,7 +64,7 @@ namespace DawgShower
         
         protected void PutinStartPosition(Vector2 playerPosition)
         {
-            position = playerPosition + new Vector2(20, -10);
+            position = playerPosition;
             Yspeed = 10;// +random.Next(7);
             Xspeed = random.Next(3) - 1;
         }

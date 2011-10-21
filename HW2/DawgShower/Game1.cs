@@ -50,6 +50,7 @@ namespace DawgShower
         private int target_hit;
         private int last_hit;
         private int current_level;
+        protected int missileWing = 1;
         private bool pause, gameover, pauseAlt;
 
         private AudioComponent audioComponent;
@@ -186,7 +187,8 @@ namespace DawgShower
             if (player.shootMissile())
             {
                 audioComponent.PlayCue("shoot");
-                Components.Add(new missile(this, ref missileModel, player.GetPosition())); 
+                Components.Add(new missile(this, ref missileModel, player.GetPosition() + new Vector2(20, -10) * missileWing));
+                missileWing *= -1;
                 player.resetShoot();    
             }
 
