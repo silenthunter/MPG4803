@@ -132,9 +132,6 @@ namespace DawgShower
             //Load Missile
             missileModel = Content.Load<Model>("missile");
 
-            //Load Triangle (For explosions!)
-            triangle = Content.Load<Model>("triangle");
-
             // Earth to be used as the default
             backgroundTexture = backgroundTextureOptions[0];
 
@@ -181,7 +178,7 @@ namespace DawgShower
 
             for (int i = 0; i < STARTMETEORCOUNT; i++)
             {
-                Components.Add(new meteors(this, ref asteroidModel, ref triangle));
+                Components.Add(new meteors(this, ref asteroidModel));
             }
         }
 
@@ -263,7 +260,7 @@ namespace DawgShower
             if ((System.Environment.TickCount - lastTickCount) > ADDMETEORTIME)
             {
                 lastTickCount = System.Environment.TickCount;
-                Components.Add(new meteors(this, ref asteroidModel, ref triangle));
+                Components.Add(new meteors(this, ref asteroidModel));
                 rockCount++;
 
                 audioComponent.PlayCue("newmeteor");

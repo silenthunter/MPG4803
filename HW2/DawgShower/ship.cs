@@ -94,7 +94,7 @@ namespace DawgShower
                 if (keyboard.IsKeyDown(Keys.LeftControl))
                 {
                     barrage = true;
-                    elapsedSinceShoot = 0;
+                    elapsedSinceShoot = -shootDelay * 4;
                 }
             }
 
