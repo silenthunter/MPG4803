@@ -16,6 +16,7 @@ namespace DawgShower
     public class meteors : Microsoft.Xna.Framework.DrawableGameComponent
     {
         protected Model asteroidModel;
+        protected Model triangle;
         protected Rectangle spriteRectangle;
         protected Vector2 position;
         protected int Yspeed;
@@ -24,14 +25,17 @@ namespace DawgShower
         protected Vector2 rotationSpeeds;
         protected float rotX, rotY;
         protected BoundingSphere bounding;
+        protected Boolean exploding = false;
+        protected float scale = 2f;
 
         protected const int METEORWIDTH = 58; //45;
         protected const int METEORHEIGHT = 66; //45;
 
-        public meteors(Game game, ref Model theModel)
+        public meteors(Game game, ref Model theModel, ref Model triangleRef)
             : base(game)
         {
             asteroidModel = theModel;
+            triangle = triangleRef;
             position = new Vector2();
 
             // TODO: Construct any child components here
@@ -78,11 +82,17 @@ namespace DawgShower
                 PutinStartPosition();
             }
 
-            position.Y += Yspeed;
-            position.X += Xspeed;
+            if (!exploding)
+            {
+                position.Y += Yspeed;
+                position.X += Xspeed;
+                rotX += rotationSpeeds.X;
+                rotY += rotationSpeeds.Y;
+            }
+            else
+                scale += 1f;
 
-            rotX += rotationSpeeds.X;
-            rotY += rotationSpeeds.Y;
+            if (scale >= 40f) Game.Components.Remove(this);
 
             base.Update(gameTime);
         }
@@ -91,12 +101,12 @@ namespace DawgShower
         {
             Vector3 Pos = new Vector3(position.X, -position.Y, -20);
             //Draw asteroid
-            foreach (ModelMesh mesh in asteroidModel.Meshes)
+            foreach (ModelMesh mesh in exploding ? triangle.Meshes : asteroidModel.Meshes)
             {
                 foreach (BasicEffect effect in mesh.Effects)
                 {
                     effect.EnableDefaultLighting();
-                    effect.World = Matrix.CreateScale(2f) *  Matrix.CreateRotationX(MathHelper.ToRadians(rotX)) *
+                    effect.World = Matrix.CreateScale(scale) *  Matrix.CreateRotationX(MathHelper.ToRadians(rotX)) *
                          Matrix.CreateRotationY(MathHelper.ToRadians(rotY)) *
                         Matrix.CreateRotationZ(MathHelper.ToRadians(180f)) * Matrix.CreateTranslation(Pos);
                     effect.View = Matrix.CreateLookAt(new Vector3(0, 0, 10),
@@ -120,7 +130,14 @@ namespace DawgShower
                         Matrix.CreateRotationZ(MathHelper.ToRadians(180f)) * Matrix.CreateTranslation(Pos);
 
             bounding.Transform(ref transform, out retn);
-            return retn.Intersects(sphere);
+            bool intersect = retn.Intersects(sphere);
+            if (intersect)
+            {
+                exploding = true;
+                scale = 5f;
+                rotX = rotY = 0;
+            }
+            return intersect;
         }
     }
 }

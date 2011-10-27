@@ -27,6 +27,7 @@ namespace DawgShower
         private Model shipModel;
         private Model asteroidModel;
         private Model missileModel;
+        private Model triangle;
         private int pauseCtr;
 
         private ship player;
@@ -131,12 +132,15 @@ namespace DawgShower
             //Load Missile
             missileModel = Content.Load<Model>("missile");
 
+            //Load Triangle (For explosions!)
+            triangle = Content.Load<Model>("triangle");
+
             // Earth to be used as the default
             backgroundTexture = backgroundTextureOptions[0];
 
             // Set up textures for game pause
             pauseTexture = Content.Load<Texture2D>("pause"); 
-            pause2Texture = Content.Load<Texture2D>("pauseR");      
+            pause2Texture = Content.Load<Texture2D>("pauseR");
 
 #if GT
             leeTexture = Content.Load<Texture2D>("buzz");
@@ -177,7 +181,7 @@ namespace DawgShower
 
             for (int i = 0; i < STARTMETEORCOUNT; i++)
             {
-                Components.Add(new meteors(this, ref asteroidModel));
+                Components.Add(new meteors(this, ref asteroidModel, ref triangle));
             }
         }
 
@@ -241,20 +245,9 @@ namespace DawgShower
                                 audioComponent.PlayCue("explosion");
                                 // remove collided meteros (BadDawgs)
                                 score++; 
-                                Components.RemoveAt(j);
-
-                                // remove collided BadDawgs
-                                 if (j < i)
-                                 {
-                                     // remove j will also decrement i
-                                     Components.RemoveAt(i - 1);
-                                 }
-                                 else
-                                 {
-                                     Components.RemoveAt(i);
-                                 }
+                                Components.RemoveAt(i);
                                 
-                                i -= 2; // remove 2 components
+                                i --; // remove 1 components
                                 target_hit++;
                           
                                 break;
@@ -270,7 +263,7 @@ namespace DawgShower
             if ((System.Environment.TickCount - lastTickCount) > ADDMETEORTIME)
             {
                 lastTickCount = System.Environment.TickCount;
-                Components.Add(new meteors(this, ref asteroidModel));
+                Components.Add(new meteors(this, ref asteroidModel, ref triangle));
                 rockCount++;
 
                 audioComponent.PlayCue("newmeteor");
