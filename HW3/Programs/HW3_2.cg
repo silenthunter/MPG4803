@@ -1,0 +1,27 @@
+void C5E3f_basicLight(float4 position  : TEXCOORD0,                        
+                      float3 normal    : TEXCOORD1,
+
+                  out float4 color     : COLOR,
+
+              uniform float3 globalAmbient,
+              uniform float3 lightColor,
+              uniform float3 lightPosition,
+              uniform float3 eyePosition,
+              uniform float3 Ke,
+              uniform float3 Ka,
+              uniform float3 Kd,
+              uniform float3 Ks,
+              uniform float  shininess)
+{
+  float3 P = position.xyz;
+  float3 N = normal;
+  float3 L = P - lightPosition;
+  float3 Blue = float3(0, 0, 1);
+  float3 Yellow = float3(1, 1, 0);
+
+  float ratio = (1 - dot(normalize(L), N))/2;
+  float3 col = lerp(Blue, Yellow, ratio);
+
+  color.xyz = col;
+  color.w = 1;
+}
