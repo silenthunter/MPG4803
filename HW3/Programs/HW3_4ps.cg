@@ -5,11 +5,11 @@ void C8E2f_bumpSurf(float2 normalMapTexCoord : TEXCOORD0,
 
                 out float4 color : COLOR,
 
-            uniform sampler2D   normalMap,
-            uniform samplerCUBE normalizeCube)
+            uniform sampler2D   normalMap)
 {
   // Normalizes light vector with normalization cube map
-  float3 lightTex = texCUBE(normalizeCube, lightDir).xyz;
+  //texCUBE(normalizeCube, lightDir).xyz;
+  float3 lightTex = normalize(lightDir).xyz;
   float3 light = expand(lightTex);
   // Sample and expand the normal map texture	
   float3 normalTex = tex2D(normalMap, normalMapTexCoord).xyz;
