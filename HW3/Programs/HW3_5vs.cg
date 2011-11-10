@@ -1,0 +1,29 @@
+struct C3E2v_Output {
+  float4 position : POSITION;
+  float4 color    : COLOR;
+  float2 texCoord : TEXCOORD0;
+};
+
+float a = .03;
+float b = 50;
+float c = 10;
+
+float d = .03;
+float e = 50;
+float f = 10;
+
+C3E2v_Output C3E2v_varying(float2 position : POSITION,
+                           float4 color    : COLOR,
+                           float2 texCoord : TEXCOORD0,
+			   uniform float time)
+{
+  C3E2v_Output OUT;
+
+  OUT.position = float4(position, 0, 1);
+  OUT.color    = color;
+  OUT.texCoord.x = a * sin(b * texCoord.y) * sin(c * time);
+  OUT.texCoord.y = d * sin(e * texCoord.x) * sin(f * time);
+  //OUT.texCoord = texCoord;
+
+  return OUT;	
+}
