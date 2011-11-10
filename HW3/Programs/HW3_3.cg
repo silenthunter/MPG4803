@@ -14,8 +14,8 @@ void C9E2v_fog(float4 position    : POSITION,
   // Assume non-projective modelview matrix
   float3 eyePosition = mul(modelView, position).xyz;
   float fogDistance  = eyePosition.z;
-  float s = 0;
-  float e = 100;
+  float s = -20;
+  float e = -30;
   fogExponent  = max(0,min(1,(e - fogDistance)/(e-s)));
   oPosition    = mul(modelViewProj, position);
   oDecalCoords = decalCoords;
