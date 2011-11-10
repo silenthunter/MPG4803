@@ -2,6 +2,7 @@ float3 expand(float3 v) { return (v-0.5)*2; }
 
 void C8E2f_bumpSurf(float2 normalMapTexCoord : TEXCOORD0,
                     float3 lightDir          : TEXCOORD1,
+		    float3 lightPos	     : TEXCOORD2,
 
                 out float4 color : COLOR,
 
@@ -14,6 +15,10 @@ void C8E2f_bumpSurf(float2 normalMapTexCoord : TEXCOORD0,
   // Sample and expand the normal map texture	
   float3 normalTex = tex2D(normalMap, normalMapTexCoord).xyz;
   float3 normal = expand(normalTex);
+
+  //float3 origin = float3(0, 0, 0);
+  float f = 2.0;
   // Diffuse lighting
   color = dot(normal,light);
+  color *= pow((max(dot(normal, normalize(lightPos)), 0)), f);
 }
