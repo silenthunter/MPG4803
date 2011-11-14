@@ -1,0 +1,2 @@
+C:\Users\lanterma\Desktop\XNAShader\Dungeon\Dungeon\Content\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Users\lanterma\Desktop\Dungeon\Dungeon\Content\obj\x86\Release\ResolveAssemblyReference.cache

@@ -1,0 +1,4 @@
+C:\seanlee\Georgia_Tech\Courses\ECE4893GraphicsProgramming\2008_XNA\ClassExamples\Dungeon\Dungeon\Content\obj\x86\Release\ResolveAssemblyReference.cache
+C:\seanlee\Georgia_Tech\Courses\ECE4893GraphicsProgramming\2008_XNA\ClassExamples\Dungeon\Dungeon\Content\obj\x86\Release\backgroundmusic.xml
+C:\seanlee\Georgia_Tech\Courses\ECE4893GraphicsProgramming\2008_XNA\ClassExamples\Dungeon\Dungeon\Content\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\seanlee\Georgia_Tech\Courses\ECE4893GraphicsProgramming\2008_XNA\ClassExamples\Dungeon\Dungeon\Content\obj\x86\Debug\backgroundmusic.xml
