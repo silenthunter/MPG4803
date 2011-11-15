@@ -369,6 +369,7 @@ namespace Dungeon.Furniture
 
                 // Change texture to stone picture
                 wallEffect.Parameters["map"].SetValue(texture_stone);
+                pass.Apply();
 
                 // drawing ground
                 wallEffect.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
@@ -382,6 +383,7 @@ namespace Dungeon.Furniture
 
                 // Change texture to cosmo picture
                 wallEffect.Parameters["map"].SetValue(texture_sky);
+                pass.Apply();
 
                 // drawing sky
                 wallEffect.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
@@ -394,6 +396,7 @@ namespace Dungeon.Furniture
 
                 // Change texture to mona lisa
                 wallEffect.Parameters["map"].SetValue(texture_monalisa);
+                pass.Apply();
 
                 // drawing the regular mona lisa
                 wallEffect.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
