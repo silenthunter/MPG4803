@@ -45,6 +45,7 @@ namespace Dungeon
 
         public Pyramid[] nugget;
         public Ducky[] ducky;
+        public Enemy enemy;
 
         public Matrix viewMatrix;
         public Matrix projectionMatrix;
@@ -206,6 +207,20 @@ namespace Dungeon
             Components.Add(Arnold);
         }
 
+        protected void InstallEnemy()
+        {
+            enemy = new Enemy(this);
+            /*enemy.Coefficient_A_Materials = new Vector4(0.05f, 0.05f, 0.05f, 1.0f);
+            enemy.Coefficient_D_Materials = new Vector4(0.1f, 0.1f, 0.1f, 1.0f);
+            enemy.Coefficient_S_Materials = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);*/
+            enemy.init_position = new Vector3(-70.0f, 30.0f, -120.0f);
+            enemy.scaling = new Vector3(100.0f, 100.0f, 100.0f);
+            enemy.worldMatrix = Matrix.CreateTranslation(enemy.init_position);
+            enemy.WVP = enemy.worldMatrix * viewMatrix * projectionMatrix;
+
+            Components.Add(enemy);
+        }
+
         protected override void Initialize()
         {
 
@@ -237,6 +252,9 @@ namespace Dungeon
             // Add furniture
             InstallFurniture();
 
+            // Add Enemy
+            InstallEnemy();
+
             base.Initialize();
 
             backmusic = audioComponent.GetCue("footsteps1");
@@ -261,6 +279,9 @@ namespace Dungeon
             ducky[0].DuckyEffect.CurrentTechnique = ducky[0].DuckyEffect.Techniques["myTech"];
             ducky[1].DuckyEffect = Content.Load<Effect>("DungeonEffect");
             ducky[1].DuckyEffect.CurrentTechnique = ducky[1].DuckyEffect.Techniques["myTech"];
+
+            //enemy.mechEffect = Content.Load<Effect>("DungeonEffect");
+            //enemy.mechEffect.CurrentTechnique = enemy.mechEffect.Techniques["myTech"];
         }
 
         
