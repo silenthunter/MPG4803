@@ -46,6 +46,7 @@ namespace Dungeon
         public Pyramid[] nugget;
         public Ducky[] ducky;
         public Enemy enemy;
+        public Effect mechEffect;
 
         public Matrix viewMatrix;
         public Matrix projectionMatrix;
@@ -209,12 +210,12 @@ namespace Dungeon
 
         protected void InstallEnemy()
         {
-            enemy = new Enemy(this);
+            enemy = new Enemy(this, mechEffect);
             /*enemy.Coefficient_A_Materials = new Vector4(0.05f, 0.05f, 0.05f, 1.0f);
             enemy.Coefficient_D_Materials = new Vector4(0.1f, 0.1f, 0.1f, 1.0f);
             enemy.Coefficient_S_Materials = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);*/
             enemy.init_position = new Vector3(-70.0f, 30.0f, -120.0f);
-            enemy.scaling = new Vector3(100.0f, 100.0f, 100.0f);
+            enemy.scaling = new Vector3(1.0f, 1.0f, 1.0f);
             enemy.worldMatrix = Matrix.CreateTranslation(enemy.init_position);
             enemy.WVP = enemy.worldMatrix * viewMatrix * projectionMatrix;
 
@@ -253,7 +254,7 @@ namespace Dungeon
             InstallFurniture();
 
             // Add Enemy
-            InstallEnemy();
+            //InstallEnemy();
 
             base.Initialize();
 
@@ -280,8 +281,10 @@ namespace Dungeon
             ducky[1].DuckyEffect = Content.Load<Effect>("DungeonEffect");
             ducky[1].DuckyEffect.CurrentTechnique = ducky[1].DuckyEffect.Techniques["myTech"];
 
-            //enemy.mechEffect = Content.Load<Effect>("DungeonEffect");
-            //enemy.mechEffect.CurrentTechnique = enemy.mechEffect.Techniques["myTech"];
+            mechEffect = Content.Load<Effect>("MechEffect");
+            mechEffect.CurrentTechnique = mechEffect.Techniques["myTech"];
+
+            InstallEnemy();
         }
 
         
@@ -393,6 +396,8 @@ namespace Dungeon
             // place the ducky2
             ducky[1].gWVP = ducky[1].WorldMatrix * viewMatrix * projectionMatrix;
 
+            //enemy.playerPos = Arnold.Position;
+            enemy.WVP = enemy.worldMatrix * viewMatrix * projectionMatrix;
 
             base.Update(gameTime);
         }

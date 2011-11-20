@@ -185,7 +185,7 @@ namespace Dungeon.Furniture
         public override void Draw(GameTime gameTime)
         {
 
-            if (wireFrame == 1)
+            /*if (wireFrame == 1)
             {
                 duckyEffect.CurrentTechnique = duckyEffect.Techniques["myPlainWireTech"];
             }
@@ -215,7 +215,7 @@ namespace Dungeon.Furniture
 
                 }
                 mesh.Draw();
-            }
+            }*/
 
             base.Draw(gameTime);
         }
