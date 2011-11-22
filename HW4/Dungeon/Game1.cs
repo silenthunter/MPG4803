@@ -396,7 +396,7 @@ namespace Dungeon
             // place the ducky2
             ducky[1].gWVP = ducky[1].WorldMatrix * viewMatrix * projectionMatrix;
 
-            //enemy.playerPos = Arnold.Position;
+            enemy.playerPos = Arnold.Position;
             enemy.WVP = enemy.worldMatrix * viewMatrix * projectionMatrix;
 
             base.Update(gameTime);

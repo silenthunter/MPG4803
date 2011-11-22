@@ -20,6 +20,7 @@ namespace Dungeon
         public Vector3 init_position;
         public Vector3 rotation;
         public Vector3 offset;
+        public Vector3 velocity = new Vector3(0 , 0, 5);
         public Vector4 a_material;
         public Vector4 d_material;
         public Vector4 s_material;
@@ -43,6 +44,26 @@ namespace Dungeon
 
         public override void Update(GameTime gameTime)
         {
+            Vector3 toPlayer3 = init_position - playerPos;
+            Vector2 toPlayer = new Vector2(toPlayer3.X, toPlayer3.Z);
+            toPlayer.Normalize();
+            toPlayer3.Y = 0;
+            toPlayer3.Normalize();
+            Vector2 facing = new Vector2(velocity.X, velocity.Z);
+            facing.Normalize();
+
+            float dot = Vector2.Dot(toPlayer, facing);
+            if (dot > 1) dot = 1;
+            if (dot < -1) dot = -1;
+            float acos = (float)Math.Acos(dot);
+
+            rotation.Y = acos;
+            if (toPlayer.X < facing.X) rotation.Y *= -1;
+
+            rotation.Y += MathHelper.ToRadians(-90f);//Model is off by 90 degrees
+
+            init_position += -toPlayer3 * 5 * gameTime.ElapsedGameTime.Milliseconds / 1000;
+
             worldMatrix = Matrix.CreateScale(scaling) * Matrix.CreateRotationX(rotation.X) * Matrix.CreateRotationZ(rotation.Z) * Matrix.CreateRotationY(rotation.Y)
             * Matrix.CreateTranslation(init_position);
 

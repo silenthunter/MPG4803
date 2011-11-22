@@ -4,7 +4,20 @@ float4x4 Projection;
 float4x4 WVP;
 float4x4 BoneTransform;
 
-// TODO: add effect parameters here.
+struct lightProperty {
+	float4 position;
+	float4 diffuseLight;
+	float4 ambientLight;
+	float4 specLight;
+	float  shininess;
+	int    on;
+	float4 attenuation;
+	int    is_pointLight;
+	float4 lightDir;
+};
+
+uniform extern int numLights;
+uniform extern lightProperty light[4];
 
 struct VertexShaderInput
 {
