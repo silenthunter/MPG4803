@@ -214,8 +214,8 @@ namespace Dungeon
             /*enemy.Coefficient_A_Materials = new Vector4(0.05f, 0.05f, 0.05f, 1.0f);
             enemy.Coefficient_D_Materials = new Vector4(0.1f, 0.1f, 0.1f, 1.0f);
             enemy.Coefficient_S_Materials = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);*/
-            enemy.init_position = new Vector3(-70.0f, 30.0f, -120.0f);
-            enemy.scaling = new Vector3(1.0f, 1.0f, 1.0f);
+            enemy.init_position = new Vector3(-70.0f, 00.0f, -120.0f);
+            enemy.scaling = new Vector3(5.0f);
             enemy.worldMatrix = Matrix.CreateTranslation(enemy.init_position);
             enemy.WVP = enemy.worldMatrix * viewMatrix * projectionMatrix;
 

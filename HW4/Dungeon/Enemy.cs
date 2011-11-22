@@ -27,6 +27,8 @@ namespace Dungeon
         public Vector3 scaling;
         public Vector3 playerPos;
 
+        public Vector3[] spawns = { new Vector3(-150, 0, -150), new Vector3(150, 0, -150), new Vector3(-150, 0, 150), new Vector3(150, 0, 150) };
+
         public Enemy(Game game, Effect effect) : base(game)
         {
             mechEffect = effect;
@@ -40,6 +42,21 @@ namespace Dungeon
         protected override void LoadContent()
         {
             base.LoadContent();
+        }
+
+        public void Respawn()
+        {
+            foreach (Vector3 vec in spawns)
+            {
+                float result;
+                Vector3 vecRef = vec;
+                Vector3.Distance(ref vecRef, ref playerPos, out result);
+                if(result > 100)
+                {
+                    init_position = vec;
+                    break;
+                }
+            }
         }
 
         public override void Update(GameTime gameTime)
@@ -67,13 +84,29 @@ namespace Dungeon
             worldMatrix = Matrix.CreateScale(scaling) * Matrix.CreateRotationX(rotation.X) * Matrix.CreateRotationZ(rotation.Z) * Matrix.CreateRotationY(rotation.Y)
             * Matrix.CreateTranslation(init_position);
 
+            foreach (GameComponent comp in this.Game.Components)
+            {
+                if (!(comp is Weapons.Bullet)) continue;
+
+                Weapons.Bullet bul = (Weapons.Bullet)comp;
+
+                foreach (ModelMesh mesh in mech.Meshes)
+                {
+                    Matrix transform = Matrix.CreateScale(scaling) * Matrix.CreateRotationY(rotation.Y) * Matrix.CreateTranslation(init_position);
+                    BoundingSphere retn;
+                    mesh.BoundingSphere.Transform(ref transform, out retn);
+                    if (retn.Intersects(new BoundingSphere(bul.Position, 2)))
+                        Respawn();
+                }
+            }
+
             base.Update(gameTime);
         }
 
         public override void Draw(GameTime gameTime)
         {
             mechEffect.Parameters["WVP"].SetValue(WVP);
-            //mechEffect.Parameters["World"].SetValue(worldMatrix);
+            mechEffect.Parameters["World"].SetValue(worldMatrix);
             /*mechEffect.Parameters["material"].StructureMembers["a_material"].SetValue(a_material);
             mechEffect.Parameters["material"].StructureMembers["d_material"].SetValue(d_material);
             mechEffect.Parameters["material"].StructureMembers["s_material"].SetValue(s_material);*/
