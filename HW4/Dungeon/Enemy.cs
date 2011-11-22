@@ -46,6 +46,16 @@ namespace Dungeon
 
         public void Respawn()
         {
+            //Randomize the array of positions
+            Random rand = new Random();
+            for(int i = 0; i < spawns.Length; i++)
+            {
+                int idx = rand.Next(i, spawns.Length);
+                Vector3 temp = spawns[i];
+                spawns[i] = spawns[idx];
+                spawns[idx] = temp;
+            }
+
             foreach (Vector3 vec in spawns)
             {
                 float result;
