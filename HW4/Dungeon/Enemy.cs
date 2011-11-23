@@ -21,9 +21,9 @@ namespace Dungeon
         public Vector3 rotation;
         public Vector3 offset;
         public Vector3 velocity = new Vector3(0 , 0, 5);
-        public Vector4 a_material;
-        public Vector4 d_material;
-        public Vector4 s_material;
+        public Vector4 Coefficient_A_Materials;
+        public Vector4 Coefficient_D_Materials;
+        public Vector4 Coefficient_S_Materials;
         public Vector3 scaling;
         public Vector3 playerPos;
 
@@ -117,9 +117,9 @@ namespace Dungeon
         {
             mechEffect.Parameters["WVP"].SetValue(WVP);
             mechEffect.Parameters["World"].SetValue(worldMatrix);
-            /*mechEffect.Parameters["material"].StructureMembers["a_material"].SetValue(a_material);
-            mechEffect.Parameters["material"].StructureMembers["d_material"].SetValue(d_material);
-            mechEffect.Parameters["material"].StructureMembers["s_material"].SetValue(s_material);*/
+            mechEffect.Parameters["material"].StructureMembers["a_material"].SetValue(Coefficient_A_Materials);
+            mechEffect.Parameters["material"].StructureMembers["d_material"].SetValue(Coefficient_D_Materials);
+            mechEffect.Parameters["material"].StructureMembers["s_material"].SetValue(Coefficient_S_Materials);
             //mechEffect.Parameters["map"].SetValue(texture_ducky); // will change inside the pass
 
             Matrix[] transforms = new Matrix[mech.Bones.Count];

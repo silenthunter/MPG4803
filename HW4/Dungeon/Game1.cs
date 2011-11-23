@@ -211,9 +211,9 @@ namespace Dungeon
         protected void InstallEnemy()
         {
             enemy = new Enemy(this, mechEffect);
-            /*enemy.Coefficient_A_Materials = new Vector4(0.05f, 0.05f, 0.05f, 1.0f);
-            enemy.Coefficient_D_Materials = new Vector4(0.1f, 0.1f, 0.1f, 1.0f);
-            enemy.Coefficient_S_Materials = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);*/
+            enemy.Coefficient_A_Materials = new Vector4(0.05f, 0.05f, 0.05f, 1.0f);
+            enemy.Coefficient_D_Materials = new Vector4(0.3f, 0.3f, 0.3f, 1.0f);
+            enemy.Coefficient_S_Materials = new Vector4(0.0f, 0.0f, 0.0f, 1.0f);
             enemy.init_position = new Vector3(-70.0f, 00.0f, -120.0f);
             enemy.scaling = new Vector3(5.0f);
             enemy.worldMatrix = Matrix.CreateTranslation(enemy.init_position);
@@ -429,6 +429,16 @@ namespace Dungeon
                 ObjEffect.Parameters["light"].Elements[i].StructureMembers["attenuation"].SetValue(LiteSource[i].Attenuation);
                 ObjEffect.Parameters["light"].Elements[i].StructureMembers["is_pointLight"].SetValue(LiteSource[i].Is_PointLight);
                 ObjEffect.Parameters["light"].Elements[i].StructureMembers["lightDir"].SetValue(LiteSource[i].LightDirection);
+
+                mechEffect.Parameters["light"].Elements[i].StructureMembers["position"].SetValue(LiteSource[i].Position);
+                mechEffect.Parameters["light"].Elements[i].StructureMembers["ambientLight"].SetValue(LiteSource[i].Coefficient_ambient);
+                mechEffect.Parameters["light"].Elements[i].StructureMembers["diffuseLight"].SetValue(LiteSource[i].Coefficient_diffuse);
+                mechEffect.Parameters["light"].Elements[i].StructureMembers["specLight"].SetValue(LiteSource[i].Coefficient_specular);
+                mechEffect.Parameters["light"].Elements[i].StructureMembers["shininess"].SetValue(LiteSource[i].Shininess);
+                mechEffect.Parameters["light"].Elements[i].StructureMembers["on"].SetValue(LiteSource[i].Is_on);
+                mechEffect.Parameters["light"].Elements[i].StructureMembers["attenuation"].SetValue(LiteSource[i].Attenuation);
+                mechEffect.Parameters["light"].Elements[i].StructureMembers["is_pointLight"].SetValue(LiteSource[i].Is_PointLight);
+                mechEffect.Parameters["light"].Elements[i].StructureMembers["lightDir"].SetValue(LiteSource[i].LightDirection);
             }
 
             base.Draw(gameTime);
