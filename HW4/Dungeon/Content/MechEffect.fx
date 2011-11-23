@@ -63,6 +63,8 @@ struct VertexShaderOutput
     float4 Position : POSITION0;
 	float3 Pos : TEXCOORD0;
 	float3 Normal : TEXCOORD1;
+	float3 R : TEXCOORD2;
+	float reflectionFactor : COLOR;
 
     // TODO: add vertex shader outputs such as colors and texture
     // coordinates here. These values will automatically be interpolated
@@ -78,6 +80,8 @@ struct PSInput
 {
 	float3 Position : TEXCOORD0;
 	float3 Normal : TEXCOORD1;
+	float3 R : TEXCOORD2;
+	float reflectionFactor : COLOR;
 };
 
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
@@ -92,7 +96,21 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 	output.Pos = output.Position;
 	output.Normal = input.Normal;
 
-    // TODO: add your vertex shader code here.
+    // Compute position and normal in world space
+	float3 N = input.Normal;
+
+	// Compute the incident, reflected, and refracted vectors
+	float3 I = output.Position - eyePosition;
+	output.R = reflect(I, N);  
+	I = normalize(I);
+
+	float fresnelBias = .07f;
+	float fresnelScale = .7f;
+	float fresnelPower = .2f;
+
+    output.reflectionFactor = fresnelBias + 
+                     fresnelScale * pow(1 + dot(I, N), 
+                                        fresnelPower );
 
     return output;
 }
@@ -112,7 +130,7 @@ PSoutput PixelShaderFunction(PSInput input)
 	output.Color = float4(0.0f, 0.0f, 0.0f, 0.0f); 
     //output.ColorDiff = float4(0.0f, 0.0f, 0.0f, 0.0f); 
 
-    for (i=0; i<numLights; i++) 
+    /*for (i=0; i<numLights; i++) 
     {
 		liteComponents[0].ambient = 0.0f;
 		liteComponents[0].diffuse = 0.0f;
@@ -140,7 +158,11 @@ PSoutput PixelShaderFunction(PSInput input)
 		}
 		//output.ColorDiff = output.ColorDiff + (liteComponents[i].diffuse / atten);
 
-	}
+	}*/
+
+	float4 reflectedColor = texCUBE(cubeSamp, input.R);
+	//float4 refractedColor;
+	output.Color = reflectedColor;
 
     return output;
 }
