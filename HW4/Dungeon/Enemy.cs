@@ -26,6 +26,7 @@ namespace Dungeon
         public Vector4 Coefficient_S_Materials;
         public Vector3 scaling;
         public Vector3 playerPos;
+        public TextureCube texCube;
 
         public Vector3[] spawns = { new Vector3(-150, 0, -150), new Vector3(150, 0, -150), new Vector3(-150, 0, 150), new Vector3(150, 0, 150) };
 
@@ -33,10 +34,11 @@ namespace Dungeon
         {
             mechEffect = effect;
             mech = game.Content.Load<Model>("mech8");
+            texCube = game.Content.Load<TextureCube>("CubeMap");
+            effect.Parameters["cubetex"].SetValue(texCube);
             foreach(ModelMesh mesh in mech.Meshes)
                 foreach (ModelMeshPart meshPart in mesh.MeshParts)
                     meshPart.Effect = mechEffect.Clone();
-            //mechEffect = new BasicEffect(game.GraphicsDevice);
         }
 
         protected override void LoadContent()

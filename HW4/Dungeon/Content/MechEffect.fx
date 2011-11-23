@@ -28,6 +28,22 @@ struct materialProperty {
 	float4 s_material;
 };
 
+//http://www.gamedev.net/topic/469622-hlsl---sampling-all-sides-of-a-cubemap-per-pixel/
+uniform extern texture cubetex;
+
+samplerCUBE cubeSamp = sampler_state
+{
+
+	Texture = (cubetex);
+
+	MAGFILTER = LINEAR;
+
+	MINFILTER = ANISOTROPIC;
+
+	MIPFILTER = LINEAR;
+
+};
+
 uniform extern float3 eyePosition;
 int numLights = 4;
 uniform extern lightProperty light[4];
