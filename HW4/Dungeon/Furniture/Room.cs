@@ -40,14 +40,14 @@ namespace Dungeon.Furniture
         private VertexPositionNormalTexture[] vertex;
         private short[] triangleListIndices;
 
-        private Texture2D texture_sky, texture_brick, texture_stone;
+        private Texture2D texture_sky, texture_brick, texture_stone, texture_stoneNM;
         private Texture2D texture_monalisa, texture_monalisa_spook, texture_lightmap, texture_monalisa_warp;
 
         public Vector4 a_material;
         public Vector4 d_material;
         public Vector4 s_material;
 
-        public Effect wallEffect;
+        public Effect wallEffect, floorEffect;
         public EffectTechnique renderingTech;
         public Matrix worldMatrix;
         public Matrix spinMatrix;
@@ -158,6 +158,7 @@ namespace Dungeon.Furniture
             texture_brick = game.Content.Load<Texture2D>("brick");
             texture_sky = game.Content.Load<Texture2D>("sky");
             texture_stone = game.Content.Load<Texture2D>("stone");
+            texture_stoneNM = game.Content.Load<Texture2D>("stoneNM");
             texture_lightmap = game.Content.Load<Texture2D>("lightmap");
             texture_monalisa = game.Content.Load<Texture2D>("monalisa");
             texture_monalisa_spook = game.Content.Load<Texture2D>("monalisa_horn");
@@ -249,6 +250,18 @@ namespace Dungeon.Furniture
             set
             {
                 wallEffect = value;
+            }
+        }
+
+        public Effect FloorEffect
+        {
+            get
+            {
+                return floorEffect;
+            }
+            set
+            {
+                floorEffect = value;
             }
         }
 
@@ -350,9 +363,19 @@ namespace Dungeon.Furniture
             wallEffect.Parameters["material"].StructureMembers["d_material"].SetValue(d_material);
             wallEffect.Parameters["material"].StructureMembers["s_material"].SetValue(s_material);
 
+            floorEffect.Parameters["gWVP"].SetValue(WVP);
+            floorEffect.Parameters["gWorld"].SetValue(WorldMatrix);
+
+            floorEffect.Parameters["material"].StructureMembers["a_material"].SetValue(a_material);
+            floorEffect.Parameters["material"].StructureMembers["d_material"].SetValue(d_material);
+            floorEffect.Parameters["material"].StructureMembers["s_material"].SetValue(s_material);
+
             wallEffect.Parameters["map"].SetValue(texture_brick); // will change inside the pass
             wallEffect.Parameters["map2"].SetValue(texture_monalisa_spook);
             wallEffect.Parameters["morphrate"].SetValue(morphrate);
+
+            floorEffect.Parameters["map"].SetValue(texture_stone);
+            floorEffect.Parameters["NormalMap"].SetValue(texture_stoneNM);
                  
             foreach (EffectPass pass in wallEffect.CurrentTechnique.Passes)
             {
@@ -366,19 +389,6 @@ namespace Dungeon.Furniture
                                                     triangleListIndices,
                                                     0,
                                                     8);
-
-                // Change texture to stone picture
-                wallEffect.Parameters["map"].SetValue(texture_stone);
-                pass.Apply();
-
-                // drawing ground
-                wallEffect.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
-                                                    vertex,
-                                                    0,
-                                                    24,
-                                                    triangleListIndices,
-                                                    24,
-                                                    2);
 
 
                 // Change texture to cosmo picture
@@ -479,6 +489,19 @@ namespace Dungeon.Furniture
                                                    2);
 
 
+            }
+
+            foreach (EffectPass pass in floorEffect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                // drawing ground
+                wallEffect.GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
+                                                    vertex,
+                                                    0,
+                                                    24,
+                                                    triangleListIndices,
+                                                    24,
+                                                    2);
             }
 
             base.Draw(gameTime);

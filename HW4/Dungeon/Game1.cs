@@ -271,6 +271,9 @@ namespace Dungeon
             masterRoom.WallEffect = Content.Load<Effect>("DungeonEffect");
             masterRoom.WallEffect.CurrentTechnique = masterRoom.WallEffect.Techniques["myTech"];
 
+            masterRoom.FloorEffect = Content.Load<Effect>("FloorEffect");
+            masterRoom.FloorEffect.CurrentTechnique = masterRoom.FloorEffect.Techniques["myTech"];
+
             nugget[0].PyramidEffect = Content.Load<Effect>("DungeonEffect");
             nugget[0].PyramidEffect.CurrentTechnique = nugget[0].PyramidEffect.Techniques["myTech"];
             nugget[1].PyramidEffect = Content.Load<Effect>("DungeonEffect");
@@ -429,6 +432,16 @@ namespace Dungeon
                 ObjEffect.Parameters["light"].Elements[i].StructureMembers["attenuation"].SetValue(LiteSource[i].Attenuation);
                 ObjEffect.Parameters["light"].Elements[i].StructureMembers["is_pointLight"].SetValue(LiteSource[i].Is_PointLight);
                 ObjEffect.Parameters["light"].Elements[i].StructureMembers["lightDir"].SetValue(LiteSource[i].LightDirection);
+
+                masterRoom.FloorEffect.Parameters["light"].Elements[i].StructureMembers["position"].SetValue(LiteSource[i].Position);
+                masterRoom.FloorEffect.Parameters["light"].Elements[i].StructureMembers["ambientLight"].SetValue(LiteSource[i].Coefficient_ambient);
+                masterRoom.FloorEffect.Parameters["light"].Elements[i].StructureMembers["diffuseLight"].SetValue(LiteSource[i].Coefficient_diffuse);
+                masterRoom.FloorEffect.Parameters["light"].Elements[i].StructureMembers["specLight"].SetValue(LiteSource[i].Coefficient_specular);
+                masterRoom.FloorEffect.Parameters["light"].Elements[i].StructureMembers["shininess"].SetValue(LiteSource[i].Shininess);
+                masterRoom.FloorEffect.Parameters["light"].Elements[i].StructureMembers["on"].SetValue(LiteSource[i].Is_on);
+                masterRoom.FloorEffect.Parameters["light"].Elements[i].StructureMembers["attenuation"].SetValue(LiteSource[i].Attenuation);
+                masterRoom.FloorEffect.Parameters["light"].Elements[i].StructureMembers["is_pointLight"].SetValue(LiteSource[i].Is_PointLight);
+                masterRoom.FloorEffect.Parameters["light"].Elements[i].StructureMembers["lightDir"].SetValue(LiteSource[i].LightDirection);
 
                 mechEffect.Parameters["light"].Elements[i].StructureMembers["position"].SetValue(LiteSource[i].Position);
                 mechEffect.Parameters["light"].Elements[i].StructureMembers["ambientLight"].SetValue(LiteSource[i].Coefficient_ambient);
