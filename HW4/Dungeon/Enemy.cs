@@ -12,7 +12,7 @@ namespace Dungeon
 {
     public class Enemy : Microsoft.Xna.Framework.DrawableGameComponent
     {
-        private Model mech;
+        public Model mech;
         public Effect mechEffect;
         public Matrix worldMatrix;
         public Matrix WVP;

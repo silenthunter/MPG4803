@@ -287,6 +287,11 @@ namespace Dungeon
             base.Initialize();
         }
 
+        public void Respawn()
+        {
+            position = new Vector3(0, 16f, 0);
+            lookAtVec = Vector3.Forward;
+        }
         
         public override void Update(GameTime gameTime)
         {
@@ -309,6 +314,23 @@ namespace Dungeon
                     {
                         bullet.ViewMatrix = viewMatrix;
                         bullet.ProjectionMatrix = projectionMatrix;
+                    }
+                }
+
+                if (gameP.Components[i] is Enemy)
+                {
+                    Enemy enemy = (Enemy)gameP.Components[i];
+
+                    foreach (ModelMesh mesh in enemy.mech.Meshes)
+                    {
+                        Matrix transform = Matrix.CreateScale(enemy.scaling) * Matrix.CreateRotationY(enemy.rotation.Y) * Matrix.CreateTranslation(enemy.init_position);
+                        BoundingSphere retn;
+                        mesh.BoundingSphere.Transform(ref transform, out retn);
+                        if (retn.Intersects(new BoundingSphere(position, 2)))
+                        {
+                            Respawn();
+                            enemy.Respawn();
+                        }
                     }
                 }
             }
