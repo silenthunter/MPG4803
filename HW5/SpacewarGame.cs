@@ -228,9 +228,10 @@ namespace Spacewar
 
         protected override void Update(GameTime gameTime)
         {
-            this.gameTime = gameTime;
             updateDone.WaitOne();
             updateDone.Reset();
+
+            this.gameTime =  gameTime;
 
             updateFirstRun = true;
             keyState = Keyboard.GetState();
@@ -244,13 +245,17 @@ namespace Spacewar
         protected void UpdateThread()
         {
             int timeManager = 0;
+            TimeSpan lastTotal = new TimeSpan();
+
             while (!updateFirstRun) Thread.Sleep(100);
             while(true)
             {
                 updateDone.WaitOne();
                 updateDone.Reset();
-                TimeSpan elapsedTime = gameTime.ElapsedGameTime;
+                //TimeSpan elapsedTime = gameTime.ElapsedGameTime;
                 TimeSpan time = gameTime.TotalGameTime;
+                TimeSpan elapsedTime = time - lastTotal;
+                lastTotal = time;
                 timeManager += elapsedTime.Milliseconds;
                 if (timeManager < 1f / 60 * 1000)
                 {
