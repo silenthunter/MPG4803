@@ -91,6 +91,7 @@ namespace Spacewar
         private Thread updateThread;
         private GameTime gameTime;
         private ManualResetEvent updateDone;
+        private ManualResetEvent renderBlock;
         private bool updateFirstRun = false;
 
         #region Properties
@@ -184,6 +185,7 @@ namespace Spacewar
             updateThread = new Thread(new ThreadStart(UpdateThread));
             updateThread.Start();
             updateDone = new ManualResetEvent(true);
+            renderBlock = new ManualResetEvent(true);
         }        
 
         protected override void Initialize()
@@ -241,12 +243,21 @@ namespace Spacewar
         //src: http://forums.create.msdn.com/forums/p/83031/501003.aspx
         protected void UpdateThread()
         {
+            int timeManager = 0;
             while (!updateFirstRun) Thread.Sleep(100);
             while(true)
             {
                 updateDone.WaitOne();
+                updateDone.Reset();
                 TimeSpan elapsedTime = gameTime.ElapsedGameTime;
                 TimeSpan time = gameTime.TotalGameTime;
+                timeManager += elapsedTime.Milliseconds;
+                if (timeManager < 1f / 60 * 1000)
+                {
+                    updateDone.Set();
+                    continue;
+                }
+                timeManager = 0;
 
                 // The time since Update was called last
                 float elapsed = (float)elapsedTime.TotalSeconds;
@@ -290,7 +301,10 @@ namespace Spacewar
                 if (!paused)
                 {
                     //Update everything
+                    renderBlock.WaitOne();
+                    renderBlock.Reset();
                     changeState = currentScreen.Update(time, elapsedTime);
+                    renderBlock.Set();
 
                     // Update the AudioEngine - MUST call this every frame!!
                     Sound.Update();
@@ -324,12 +338,15 @@ namespace Spacewar
 
         protected override void Draw(GameTime gameTime)
         {
+            updateDone.WaitOne();
+            updateDone.Reset();
             graphics.GraphicsDevice.Clear(ClearOptions.DepthBuffer, 
                 Color.CornflowerBlue, 1.0f, 0);            
 
             base.Draw(gameTime);
 
             currentScreen.Render();
+            updateDone.Set();
         }
 
         protected override void EndDraw()
