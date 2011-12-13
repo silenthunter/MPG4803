@@ -16,10 +16,18 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Storage;
+using System.Threading;
 #endregion
 
 namespace Spacewar
 {
+    struct GameBuffer
+    {
+        Screen screen;
+        GameState state;
+        Player[] players;
+    }
+
     /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -78,6 +86,12 @@ namespace Spacewar
 
         private static KeyboardState keyState;
         private bool justWentFullScreen;
+
+        private GameBuffer currentGame, lastGame;
+        private Thread updateThread;
+        private GameTime gameTime;
+        private ManualResetEvent updateDone;
+        private bool updateFirstRun = false;
 
         #region Properties
         public static GameState GameState
@@ -166,6 +180,10 @@ namespace Spacewar
 
             // Game should run as fast as possible.
             IsFixedTimeStep = false;
+
+            updateThread = new Thread(new ThreadStart(UpdateThread));
+            updateThread.Start();
+            updateDone = new ManualResetEvent(true);
         }        
 
         protected override void Initialize()
@@ -208,71 +226,90 @@ namespace Spacewar
 
         protected override void Update(GameTime gameTime)
         {
-            TimeSpan elapsedTime = gameTime.ElapsedGameTime;
-            TimeSpan time = gameTime.TotalGameTime;
+            this.gameTime = gameTime;
+            updateDone.WaitOne();
+            updateDone.Reset();
 
-            // The time since Update was called last
-            float elapsed = (float)elapsedTime.TotalSeconds;
-
-            GameState changeState = GameState.None;
-
+            updateFirstRun = true;
             keyState = Keyboard.GetState();
-            XInputHelper.Update(this, keyState);
-
-            if ((keyState.IsKeyDown(Keys.RightAlt) || keyState.IsKeyDown(Keys.LeftAlt)) && keyState.IsKeyDown(Keys.Enter) && !justWentFullScreen)
-            {
-                ToggleFullScreen();
-                justWentFullScreen = true;
-            }
-
-            if (keyState.IsKeyUp(Keys.Enter))
-            {
-                justWentFullScreen = false;
-            }
-
-            if (XInputHelper.GamePads[PlayerIndex.One].BackPressed ||
-                XInputHelper.GamePads[PlayerIndex.Two].BackPressed)
-            {
-                if (gameState == GameState.PlayEvolved || gameState == GameState.PlayRetro)
-                {
-                    paused = !paused;
-                }
-
-                if (gameState == GameState.LogoSplash)
-                {
-                    this.Exit();
-                }
-            }
-
-            //Reload settings file?
-            if (XInputHelper.GamePads[PlayerIndex.One].YPressed)
-            {
-                //settings = Settings.Load("settings.xml");
-                //GC.Collect();
-            }
-
-            if (!paused)
-            {
-                //Update everything
-                changeState = currentScreen.Update(time, elapsedTime);
-
-                // Update the AudioEngine - MUST call this every frame!!
-                Sound.Update();
-
-                //If either player presses start then reset the game
-                if (XInputHelper.GamePads[PlayerIndex.One].StartPressed ||
-                    XInputHelper.GamePads[PlayerIndex.Two].StartPressed)
-                {
-                    changeState = GameState.LogoSplash;
-                }
-
-                if (changeState != GameState.None)
-                {
-                    ChangeState(changeState);
-                }
-            }
 
             base.Update(gameTime);
+
+            updateDone.Set();
+        }
+
+        //src: http://forums.create.msdn.com/forums/p/83031/501003.aspx
+        protected void UpdateThread()
+        {
+            while (!updateFirstRun) Thread.Sleep(100);
+            while(true)
+            {
+                updateDone.WaitOne();
+                TimeSpan elapsedTime = gameTime.ElapsedGameTime;
+                TimeSpan time = gameTime.TotalGameTime;
+
+                // The time since Update was called last
+                float elapsed = (float)elapsedTime.TotalSeconds;
+
+                GameState changeState = GameState.None;
+
+                XInputHelper.Update(this, keyState);
+
+                if ((keyState.IsKeyDown(Keys.RightAlt) || keyState.IsKeyDown(Keys.LeftAlt)) && keyState.IsKeyDown(Keys.Enter) && !justWentFullScreen)
+                {
+                    ToggleFullScreen();
+                    justWentFullScreen = true;
+                }
+
+                if (keyState.IsKeyUp(Keys.Enter))
+                {
+                    justWentFullScreen = false;
+                }
+
+                if (XInputHelper.GamePads[PlayerIndex.One].BackPressed ||
+                    XInputHelper.GamePads[PlayerIndex.Two].BackPressed)
+                {
+                    if (gameState == GameState.PlayEvolved || gameState == GameState.PlayRetro)
+                    {
+                        paused = !paused;
+                    }
+
+                    if (gameState == GameState.LogoSplash)
+                    {
+                        this.Exit();
+                    }
+                }
+
+                //Reload settings file?
+                if (XInputHelper.GamePads[PlayerIndex.One].YPressed)
+                {
+                    //settings = Settings.Load("settings.xml");
+                    //GC.Collect();
+                }
+
+                if (!paused)
+                {
+                    //Update everything
+                    changeState = currentScreen.Update(time, elapsedTime);
+
+                    // Update the AudioEngine - MUST call this every frame!!
+                    Sound.Update();
+
+                    //If either player presses start then reset the game
+                    if (XInputHelper.GamePads[PlayerIndex.One].StartPressed ||
+                        XInputHelper.GamePads[PlayerIndex.Two].StartPressed)
+                    {
+                        changeState = GameState.LogoSplash;
+                    }
+
+                    if (changeState != GameState.None)
+                    {
+                        ChangeState(changeState);
+                    }
+                }
+                updateDone.Set();
+            }
+
         }
 
         protected override bool BeginDraw()
