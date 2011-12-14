@@ -98,6 +98,7 @@ namespace Spacewar
             retn.yawIncrement = this.yawIncrement;
             retn.destroyed = this.destroyed;
             retn.shape = this.shape;
+            retn.delete = this.delete;
 
             return retn;
         }

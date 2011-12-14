@@ -420,7 +420,8 @@ namespace Spacewar
             for (int i = 0; i < astr.Length; i++)
             {
                 asteroids[i] = astr[0].Copy();
-                scene.Add(asteroids[i]);
+                if(!asteroids[i].Delete)
+                    scene.Add(asteroids[i]);
             }
 
             this.particles = part;
