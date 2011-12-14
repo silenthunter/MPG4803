@@ -85,9 +85,10 @@ namespace Spacewar
             base.Update(time, elapsedTime);
         }
 
-        public Asteroid Copy()
+        public new Asteroid Copy()
         {
-            Asteroid retn = new Asteroid(this.GameInstance, AsteroidType.Large, new Vector3(this.position.X, this.position.Y, this.position.Z));
+            Asteroid retn = new Asteroid(this.GameInstance, AsteroidType.Large, 
+                new Vector3(this.position.X, this.position.Y, this.position.Z));
             retn.radius = this.radius;
             retn.roll = this.roll;
             retn.rollIncrement = this.rollIncrement;
@@ -96,6 +97,7 @@ namespace Spacewar
             retn.yaw = this.yaw;
             retn.yawIncrement = this.yawIncrement;
             retn.destroyed = this.destroyed;
+            retn.shape = this.shape;
 
             return retn;
         }
