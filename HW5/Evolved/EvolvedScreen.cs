@@ -403,6 +403,20 @@ namespace Spacewar
             particles.OnCreateDevice();
         }
 
+        private void ReplaceScene(SceneItem sun, Ship one, Ship two)
+        {
+            scene.Remove(this.sun);
+            scene.Remove(ship1);
+            scene.Remove(ship2);
+            this.sun = sun;
+            this.ship1 = one;
+            this.ship2 = two;
+
+            scene.Add(sun);
+            scene.Add(ship1);
+            scene.Add(ship2);
+        }
+
         public override Screen Copy()
         {
             EvolvedScreen retn = new EvolvedScreen(this.game);
@@ -415,6 +429,17 @@ namespace Spacewar
             retn.lastLevelTime = this.lastLevelTime;
             retn.ended = this.ended;
             retn.endTime = this.endTime;
+
+            retn.bullets = this.bullets;
+            retn.ship1 = this.ship1;
+            retn.ship2 = this.ship2;
+            retn.particles = this.particles;
+
+            retn.paused = this.paused;
+            retn.player1Score = this.player1Score;
+            retn.player2Score = this.player2Score;
+            retn.backdrop = this.backdrop;//Doesn't change so I won't deep copy
+            retn.ReplaceScene(this.sun.Copy(), this.ship1.Copy(), this.ship2.Copy());
 
             return retn;
         }

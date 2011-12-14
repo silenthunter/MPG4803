@@ -416,5 +416,16 @@ namespace Spacewar
                 }
             }
         }
+
+        public new Ship Copy()
+        {
+            //TODO:Complete
+            Ship retn = new Ship(this.GameInstance, this.player, this.position, this.bullets);
+            retn.thrustFrame = this.thrustFrame;
+            retn.showThrust = this.showThrust;
+            retn.scale = this.scale;
+
+            return retn;
+        }
     }
 }
