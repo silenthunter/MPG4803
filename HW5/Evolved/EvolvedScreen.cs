@@ -402,5 +402,21 @@ namespace Spacewar
 
             particles.OnCreateDevice();
         }
+
+        public override Screen Copy()
+        {
+            EvolvedScreen retn = new EvolvedScreen(this.game);
+
+            //TODO: Deep copy
+            retn.asteroids = new Asteroid[this.asteroids.Length];
+            this.asteroids.CopyTo(retn.asteroids, 0);
+
+            retn.levelTime = this.levelTime;
+            retn.lastLevelTime = this.lastLevelTime;
+            retn.ended = this.ended;
+            retn.endTime = this.endTime;
+
+            return retn;
+        }
     }
 }

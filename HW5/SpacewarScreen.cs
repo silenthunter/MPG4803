@@ -189,7 +189,20 @@ namespace Spacewar
 
         public override Screen Copy()
         {
-            throw new NotImplementedException();
+            //TODO: Deep Copy
+            SpacewarScreen retn = new SpacewarScreen(this.game);
+            retn.bullets = this.bullets;
+            retn.ship1 = this.ship1;
+            retn.ship2 = this.ship2;
+            retn.sun = this.sun;
+            retn.particles = this.particles;
+
+            retn.paused = this.paused;
+            retn.player1Score = this.player1Score;
+            retn.player2Score = this.player2Score;
+            retn.backdrop = this.backdrop;//Doesn't change so I won't deep copy
+
+            return retn;
         }
     }
 }
