@@ -26,7 +26,7 @@ namespace Spacewar
         private static string selectionTexture = @"textures\ship_select_FINAL";
         private Vector4 white = new Vector4(1f, 1f, 1f, 1f);
 
-        private static SceneItem[] ships = new SceneItem[2];
+        private SceneItem[] ships = new SceneItem[2];
         private int[] selectedShip = new int[] { 0, 0 };
         private int[] selectedSkin = new int[] { 0, 0 };
 
@@ -44,16 +44,24 @@ namespace Spacewar
             //Start menu music
             menuMusic = Sound.Play(Sounds.MenuMusic);
 
-            if (ships[0] == null)
-            {
-                ships[0] = new SceneItem(game, new EvolvedShape(game, EvolvedShapes.Ship, PlayerIndex.One, selectedShip[0], selectedSkin[0], LightingType.Menu), new Vector3(-120, 0, 0));
-                ships[0].Scale = new Vector3(.05f, .05f, .05f);
-                scene.Add(ships[0]);
+            ships[0] = new SceneItem(game, new EvolvedShape(game, EvolvedShapes.Ship, PlayerIndex.One, selectedShip[0], selectedSkin[0], LightingType.Menu), new Vector3(-120, 0, 0));
+            ships[0].Scale = new Vector3(.05f, .05f, .05f);
+            scene.Add(ships[0]);
 
-                ships[1] = new SceneItem(game, new EvolvedShape(game, EvolvedShapes.Ship, PlayerIndex.Two, selectedShip[1], selectedSkin[1], LightingType.Menu), new Vector3(120, 0, 0));
-                ships[1].Scale = new Vector3(.05f, .05f, .05f);
-                scene.Add(ships[1]);
-            }
+            ships[1] = new SceneItem(game, new EvolvedShape(game, EvolvedShapes.Ship, PlayerIndex.Two, selectedShip[1], selectedSkin[1], LightingType.Menu), new Vector3(120, 0, 0));
+            ships[1].Scale = new Vector3(.05f, .05f, .05f);
+            scene.Add(ships[1]);
+        }
+
+        public void ReplaceShips(SceneItem one, SceneItem two)
+        {
+            scene.Remove(ships[0]);
+            scene.Remove(ships[1]);
+
+            ships[0] = one;
+            ships[1] = two;
+            scene.Add(ships[0]);
+            scene.Add(ships[1]);
         }
 
         /// <summary>
@@ -296,6 +304,8 @@ namespace Spacewar
 
             retn.player1Ready = this.player1Ready;
             retn.player2Ready = this.player2Ready;
+
+            retn.ReplaceShips(this.ships[0].Copy(), this.ships[1].Copy());
 
             return retn;
         }

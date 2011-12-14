@@ -233,7 +233,7 @@ namespace Spacewar
         public SceneItem(Game game, Shape shape, Vector3 initialPosition)
         {
             this.shape = shape;
-            this.position = initialPosition;
+            this.position = new Vector3(initialPosition.X, initialPosition.Y, initialPosition.Z);
             this.game = game;
         }
 
@@ -403,6 +403,19 @@ namespace Spacewar
 
         public virtual void OnCreateDevice()
         {
+        }
+
+        public SceneItem Copy()
+        {
+            SceneItem retn = new SceneItem(this.game, this.shape, this.position);
+            retn.acceleration = new Vector3(this.acceleration.X, this.acceleration.Y, this.acceleration.Z);
+            retn.center = new Vector3(this.center.X, this.center.Y, this.center.Z);
+            retn.paused = this.paused;
+            retn.radius = this.radius;
+            retn.rotation = new Vector3(this.rotation.X, this.rotation.Y, this.rotation.Z);
+            retn.scale = new Vector3(this.scale.X, this.scale.Y, this.scale.Z);
+
+            return retn;
         }
     }
 }
