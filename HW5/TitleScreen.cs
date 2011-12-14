@@ -110,5 +110,14 @@ namespace Spacewar
         {
             base.OnCreateDevice();
         }
+
+        public override Screen Copy()
+        {
+            TitleScreen retn = new TitleScreen(this.game);
+            retn.showInfo = this.showInfo;
+            retn.playRetro = this.playRetro;
+
+            return retn;
+        }
     }
 }

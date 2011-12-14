@@ -284,7 +284,17 @@ namespace Spacewar
 
         public override Screen Copy()
         {
-            throw new NotImplementedException();
+            SelectionScreen retn = new SelectionScreen(this.game);
+
+            retn.selectedShip = new int[] { 0, 0 };
+            this.selectedShip.CopyTo(retn.selectedShip, 0);
+            retn.selectedSkin = new int[] { 0, 0 };
+            this.selectedSkin.CopyTo(retn.selectedSkin, 0);
+
+            retn.player1Ready = this.player1Ready;
+            retn.player2Ready = this.player2Ready;
+
+            return retn;
         }
     }
 }
