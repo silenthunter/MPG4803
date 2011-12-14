@@ -51,7 +51,7 @@ namespace Spacewar
 
         private Vector3 direction;
 
-        private SpriteBatch batch;
+        private static SpriteBatch batch;
 
         private Vector3[] extendedExtent;
 
@@ -161,7 +161,7 @@ namespace Spacewar
             rotation = new Vector3(MathHelper.ToRadians(90), 0, 0);
             direction = new Vector3((float)(-Math.Sin(Rotation.Z)), (float)(Math.Cos(Rotation.Z)), 0);
 
-            if (game != null)
+            if (game != null && batch == null)
             {
                 IGraphicsDeviceService graphicsService = (IGraphicsDeviceService)game.Services.GetService(typeof(IGraphicsDeviceService));
                 batch = new SpriteBatch(graphicsService.GraphicsDevice);
@@ -420,10 +420,21 @@ namespace Spacewar
         public new Ship Copy()
         {
             //TODO:Complete
-            Ship retn = new Ship(this.GameInstance, this.player, this.position, this.bullets);
+            Ship retn = new Ship(this.GameInstance, this.player, ShipClass.Pencil, 0, this.position, this.bullets, this.particles);
             retn.thrustFrame = this.thrustFrame;
             retn.showThrust = this.showThrust;
             retn.scale = this.scale;
+            retn.evolved = this.evolved;
+
+            retn.inHyperspace = this.inHyperspace;
+            retn.inRecovery = this.inRecovery;
+            retn.exitHyperspaceTime = this.exitHyperspaceTime;
+            retn.exitRecoveryTime = this.exitRecoveryTime;
+            retn.playedReturn = this.playedReturn;
+            retn.invulnerable = this.invulnerable;
+            retn.direction = new Vector3(this.direction.X, this.direction.Y, this.direction.Z);
+
+            retn.shape = this.shape;
 
             return retn;
         }

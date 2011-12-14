@@ -423,7 +423,8 @@ namespace Spacewar
 
             //TODO: Deep copy
             retn.asteroids = new Asteroid[this.asteroids.Length];
-            this.asteroids.CopyTo(retn.asteroids, 0);
+            for (int i = 0; i < this.asteroids.Length; i++)
+                retn.asteroids[i] = this.asteroids[i].Copy();
 
             retn.levelTime = this.levelTime;
             retn.lastLevelTime = this.lastLevelTime;
@@ -431,8 +432,6 @@ namespace Spacewar
             retn.endTime = this.endTime;
 
             retn.bullets = this.bullets;
-            retn.ship1 = this.ship1;
-            retn.ship2 = this.ship2;
             retn.particles = this.particles;
 
             retn.paused = this.paused;

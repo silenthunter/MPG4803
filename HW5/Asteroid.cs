@@ -84,5 +84,20 @@ namespace Spacewar
             rotation = new Vector3(roll, pitch, yaw);
             base.Update(time, elapsedTime);
         }
+
+        public Asteroid Copy()
+        {
+            Asteroid retn = new Asteroid(this.GameInstance, AsteroidType.Large, new Vector3(this.position.X, this.position.Y, this.position.Z));
+            retn.radius = this.radius;
+            retn.roll = this.roll;
+            retn.rollIncrement = this.rollIncrement;
+            retn.pitch = this.pitch;
+            retn.pitchIncrement = this.pitchIncrement;
+            retn.yaw = this.yaw;
+            retn.yawIncrement = this.yawIncrement;
+            retn.destroyed = this.destroyed;
+
+            return retn;
+        }
     }
 }

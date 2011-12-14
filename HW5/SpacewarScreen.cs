@@ -187,5 +187,10 @@ namespace Spacewar
             backdrop.ShapeItem.OnCreateDevice();
         }
 
+        public override Screen Copy()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }
