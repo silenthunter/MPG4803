@@ -403,7 +403,8 @@ namespace Spacewar
             particles.OnCreateDevice();
         }
 
-        private void ReplaceScene(SceneItem sun, Ship one, Ship two, Asteroid[] astr)
+        private void ReplaceScene(SceneItem sun, Ship one, Ship two, 
+            Asteroid[] astr, Particles part, Projectiles proj)
         {
             scene.Remove(this.sun);
             scene.Remove(ship1);
@@ -421,6 +422,12 @@ namespace Spacewar
                 asteroids[i] = astr[0].Copy();
                 scene.Add(asteroids[i]);
             }
+
+            this.particles = part;
+            scene.Add(particles);
+
+            this.bullets = proj;
+            scene.Add(bullets);
         }
 
         public override Screen Copy()
@@ -442,7 +449,7 @@ namespace Spacewar
             retn.player1Score = this.player1Score;
             retn.player2Score = this.player2Score;
             retn.backdrop = this.backdrop;//Doesn't change so I won't deep copy
-            retn.ReplaceScene(this.sun.Copy(), this.ship1.Copy(), this.ship2.Copy(), this.asteroids);
+            retn.ReplaceScene(this.sun.Copy(), this.ship1.Copy(), this.ship2.Copy(), this.asteroids, this.particles, this.bullets);
 
             return retn;
         }
