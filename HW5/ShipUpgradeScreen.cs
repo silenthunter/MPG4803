@@ -343,7 +343,18 @@ namespace Spacewar
 
         public override Screen Copy()
         {
-            throw new NotImplementedException();
+            ShipUpgradeScreen retn = new ShipUpgradeScreen(this.game);
+            retn.flashEndTime = this.flashEndTime;
+            retn.flashPercent = this.flashPercent;
+            retn.flashTime = this.flashTime;
+
+            retn.player1Ready = this.player1Ready;
+            retn.player2Ready = this.player2Ready;
+
+            this.playerCashCount.CopyTo(retn.playerCashCount, 0);
+            retn.playingTallySound = this.playingTallySound;
+
+            return retn;
         }
     }
 }
