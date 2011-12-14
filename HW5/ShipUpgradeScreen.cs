@@ -340,5 +340,10 @@ namespace Spacewar
             weapons[0].ShapeItem.OnCreateDevice();
             weapons[1].ShapeItem.OnCreateDevice();
         }
+
+        public override Screen Copy()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

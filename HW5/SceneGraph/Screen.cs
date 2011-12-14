@@ -118,5 +118,7 @@ namespace Spacewar
             IGraphicsDeviceService graphicsService = (IGraphicsDeviceService)game.Services.GetService(typeof(IGraphicsDeviceService));
             batch = new SpriteBatch(graphicsService.GraphicsDevice);
         }
+
+        public abstract Screen Copy();
     }
 }

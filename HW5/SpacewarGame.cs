@@ -23,9 +23,23 @@ namespace Spacewar
 {
     struct GameBuffer
     {
-        Screen screen;
-        GameState state;
-        Player[] players;
+        public Screen screen;
+        public GameState state;
+        public Player[] players;
+
+        public GameBuffer Copy()
+        {
+            GameBuffer retn = new GameBuffer();
+            retn.screen = this.screen.Copy();
+            retn.state = this.state;
+            if (this.players != null)
+            {
+                retn.players = new Player[2];
+                this.players.CopyTo(retn.players, 0);
+            }
+
+            return retn;
+        }
     }
 
     /// <summary>
@@ -57,12 +71,12 @@ namespace Spacewar
         /// <summary>
         /// Information about the players such as score, health etc
         /// </summary>
-        private static Player[] players;
+        //private static Player[] players;
 
         /// <summary>
         /// The current game state
         /// </summary>
-        private static GameState gameState = GameState.Started;
+        //private static GameState gameState = GameState.Started;
 
         /// <summary>
         /// Which game board are we playing on
@@ -80,26 +94,28 @@ namespace Spacewar
         private RenderTarget2D drawBuffer;
         private SpriteBatch spriteBatch;
 
-        private static Screen currentScreen;
+        //private static Screen currentScreen;
 
         private static PlatformID currentPlatform;
 
         private static KeyboardState keyState;
         private bool justWentFullScreen;
 
-        private GameBuffer currentGame, lastGame;
+        private static GameBuffer UpdateBuff, DrawBuff;
         private Thread updateThread;
         private GameTime gameTime;
         private ManualResetEvent updateDone;
         private ManualResetEvent renderBlock;
         private bool updateFirstRun = false;
+        private bool isDone = false;
+        private bool swapBuffer = true;
 
         #region Properties
         public static GameState GameState
         {
             get
             {
-                return gameState;
+                return UpdateBuff.state;
             }
         }
 
@@ -135,7 +151,7 @@ namespace Spacewar
         {
             get
             {
-                return players;
+                return UpdateBuff.players;
             }
         }
 
@@ -186,6 +202,8 @@ namespace Spacewar
             updateThread.Start();
             updateDone = new ManualResetEvent(true);
             renderBlock = new ManualResetEvent(true);
+            UpdateBuff = new GameBuffer();
+            UpdateBuff.state = GameState.Started;
         }        
 
         protected override void Initialize()
@@ -214,6 +232,7 @@ namespace Spacewar
 
             //Kick off the game by loading the logo splash screen
             ChangeState(GameState.LogoSplash);
+            DrawBuff = UpdateBuff.Copy();
 
             float fieldOfView = (float)Math.PI / 4;
             float aspectRatio = (float)FixedDrawingWidth / (float)FixedDrawingHeight;
@@ -248,7 +267,7 @@ namespace Spacewar
             TimeSpan lastTotal = new TimeSpan();
 
             while (!updateFirstRun) Thread.Sleep(100);
-            while(true)
+            while(!isDone)
             {
                 updateDone.WaitOne();
                 updateDone.Reset();
@@ -285,12 +304,12 @@ namespace Spacewar
                 if (XInputHelper.GamePads[PlayerIndex.One].BackPressed ||
                     XInputHelper.GamePads[PlayerIndex.Two].BackPressed)
                 {
-                    if (gameState == GameState.PlayEvolved || gameState == GameState.PlayRetro)
+                    if (UpdateBuff.state == GameState.PlayEvolved || UpdateBuff.state == GameState.PlayRetro)
                     {
                         paused = !paused;
                     }
 
-                    if (gameState == GameState.LogoSplash)
+                    if (UpdateBuff.state == GameState.LogoSplash)
                     {
                         this.Exit();
                     }
@@ -308,7 +327,7 @@ namespace Spacewar
                     //Update everything
                     renderBlock.WaitOne();
                     renderBlock.Reset();
-                    changeState = currentScreen.Update(time, elapsedTime);
+                    changeState = UpdateBuff.screen.Update(time, elapsedTime);
                     renderBlock.Set();
 
                     // Update the AudioEngine - MUST call this every frame!!
@@ -327,6 +346,16 @@ namespace Spacewar
                     }
                 }
                 updateDone.Set();
+
+                if (swapBuffer)
+                {
+                    renderBlock.WaitOne();
+                    renderBlock.Reset();
+
+                    DrawBuff = UpdateBuff.Copy();
+                    swapBuffer = false;
+                    renderBlock.Set();
+                }
             }
 
         }
@@ -343,15 +372,17 @@ namespace Spacewar
 
         protected override void Draw(GameTime gameTime)
         {
-            updateDone.WaitOne();
-            updateDone.Reset();
+            renderBlock.WaitOne();
+            renderBlock.Reset();
             graphics.GraphicsDevice.Clear(ClearOptions.DepthBuffer, 
                 Color.CornflowerBlue, 1.0f, 0);            
 
             base.Draw(gameTime);
 
-            currentScreen.Render();
-            updateDone.Set();
+            DrawBuff.screen.Render();
+
+            swapBuffer = true;
+            renderBlock.Set();
         }
 
         protected override void EndDraw()
@@ -363,6 +394,7 @@ namespace Spacewar
 
         internal void ChangeState(GameState NextState)
         {
+            Screen currentScreen = UpdateBuff.screen;
             //Logo spash can come from ANY state since its the place you go when you restart
             if (NextState == GameState.LogoSplash)
             {
@@ -370,50 +402,50 @@ namespace Spacewar
                     currentScreen.Shutdown();
 
                 currentScreen = new TitleScreen(this);
-                gameState = GameState.LogoSplash;
+                UpdateBuff.state = GameState.LogoSplash;
             }
-            else if (gameState == GameState.LogoSplash && NextState == GameState.ShipSelection)
+            else if (UpdateBuff.state == GameState.LogoSplash && NextState == GameState.ShipSelection)
             {
                 Sound.PlayCue(Sounds.MenuAdvance);
 
                 //This is really where the game starts so setup the player information
-                players = new Player[2] { new Player(), new Player() };
+                UpdateBuff.players = new Player[2] { new Player(), new Player() };
 
                 //Start at level 1
                 gameLevel = 1;
 
                 currentScreen.Shutdown();
                 currentScreen = new SelectionScreen(this);
-                gameState = GameState.ShipSelection;
+                UpdateBuff.state = GameState.ShipSelection;
             }
-            else if (gameState == GameState.PlayEvolved && NextState == GameState.ShipUpgrade)
+            else if (UpdateBuff.state == GameState.PlayEvolved && NextState == GameState.ShipUpgrade)
             {
                 currentScreen.Shutdown();
                 currentScreen = new ShipUpgradeScreen(this);
-                gameState = GameState.ShipUpgrade;
+                UpdateBuff.state = GameState.ShipUpgrade;
             }
-            else if ((gameState == GameState.ShipSelection || GameState == GameState.ShipUpgrade) && NextState == GameState.PlayEvolved)
+            else if ((UpdateBuff.state == GameState.ShipSelection || GameState == GameState.ShipUpgrade) && NextState == GameState.PlayEvolved)
             {
                 Sound.PlayCue(Sounds.MenuAdvance);
 
                 currentScreen.Shutdown();
                 currentScreen = new EvolvedScreen(this);
-                gameState = GameState.PlayEvolved;
+                UpdateBuff.state = GameState.PlayEvolved;
             }
-            else if (gameState == GameState.LogoSplash && NextState == GameState.PlayRetro)
+            else if (UpdateBuff.state == GameState.LogoSplash && NextState == GameState.PlayRetro)
             {
                 //Game starts here for retro
-                players = new Player[2] { new Player(), new Player() };
+                UpdateBuff.players = new Player[2] { new Player(), new Player() };
 
                 currentScreen.Shutdown();
                 currentScreen = new RetroScreen(this);
-                gameState = GameState.PlayRetro;
+                UpdateBuff.state = GameState.PlayRetro;
             }
-            else if (gameState == GameState.PlayEvolved && NextState == GameState.Victory)
+            else if (UpdateBuff.state == GameState.PlayEvolved && NextState == GameState.Victory)
             {
                 currentScreen.Shutdown();
                 currentScreen = new VictoryScreen(this);
-                gameState = GameState.Victory;
+                UpdateBuff.state = GameState.Victory;
             }
             else
             {
@@ -421,6 +453,8 @@ namespace Spacewar
                 // What does this map to on XBox 360?
                 //Debug.Assert(false, String.Format("Invalid State transition {0} to {1}", gameState.ToString(), NextState.ToString()));
             }
+
+            UpdateBuff.screen = currentScreen;
         }
 
         protected override void LoadContent()
@@ -429,8 +463,8 @@ namespace Spacewar
 
             contentManager = new ContentManager(Services);
 
-            if (currentScreen != null)
-                currentScreen.OnCreateDevice();
+            if (UpdateBuff.screen != null)
+                UpdateBuff.screen.OnCreateDevice();
 
             Font.Init(this);
 

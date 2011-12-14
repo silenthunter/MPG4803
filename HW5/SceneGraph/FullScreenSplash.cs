@@ -104,6 +104,15 @@ namespace Spacewar
             //Render the backdrop
             base.Render();
         }
+
+        public override Screen Copy()
+        {
+            FullScreenSplash retn = new FullScreenSplash(this.game, this.textureName);
+            retn.timeout = this.timeout;
+            retn.endTime = this.endTime;
+
+            return retn;
+        }
     }
 }
 
