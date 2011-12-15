@@ -27,6 +27,7 @@ namespace Spacewar
         public GameState state;
         public Player[] players;
 
+        //Buffer for double buffering
         public GameBuffer Copy()
         {
             GameBuffer retn = new GameBuffer();
@@ -198,6 +199,7 @@ namespace Spacewar
             // Game should run as fast as possible.
             IsFixedTimeStep = false;
 
+            //Start the Update thread
             updateThread = new Thread(new ThreadStart(UpdateThread));
             updateThread.Start();
             updateDone = new ManualResetEvent(true);
@@ -221,6 +223,7 @@ namespace Spacewar
             //Initialise the sound
             Sound.Initialize();
 
+            //Start the sound thread
             soundThread = new Thread(new ThreadStart(UpdateSound));
             soundThread.Start();
 
@@ -250,6 +253,7 @@ namespace Spacewar
 
         protected override void Update(GameTime gameTime)
         {
+            //Make sure the update thread isn't already using the time and keystate
             updateDone.WaitOne();
             updateDone.Reset();
 
@@ -266,11 +270,15 @@ namespace Spacewar
         //src: http://forums.create.msdn.com/forums/p/83031/501003.aspx
         protected void UpdateThread()
         {
+        #if XBOX  
+            Thread.CurrentThread.SetProcessorAffinity (2);  
+        #endif
+
             int timeManager = 0;
             TimeSpan lastTotal = new TimeSpan();
 
-            while (!updateFirstRun) Thread.Sleep(100);
-            while(!isDone)
+            while (!updateFirstRun) Thread.Sleep(100);//Wait until gameTime is initialized
+            while(!isDone)//Loop as long as the game is running
             {
                 updateDone.WaitOne();
                 updateDone.Reset();
@@ -279,7 +287,7 @@ namespace Spacewar
                 TimeSpan elapsedTime = time - lastTotal;
                 lastTotal = time;
                 timeManager += elapsedTime.Milliseconds;
-                if (timeManager < 1f / 60 * 1000)
+                if (timeManager < 1f / 60 * 1000)//Don't update too fast so the game plays alright
                 {
                     updateDone.Set();
                     continue;
@@ -328,6 +336,8 @@ namespace Spacewar
                 if (!paused)
                 {
                     //Update everything
+
+                    //Make sure not to switch buffers while XNA is drawing
                     renderBlock.WaitOne();
                     renderBlock.Reset();
                     changeState = UpdateBuff.screen.Update(time, elapsedTime);
@@ -349,6 +359,7 @@ namespace Spacewar
 
                 if (swapBuffer)
                 {
+                    //Make sure not to switch buffers while XNA is drawing
                     renderBlock.WaitOne();
                     renderBlock.Reset();
 
@@ -362,6 +373,10 @@ namespace Spacewar
 
         protected void UpdateSound()
         {
+#if XBOX  
+            Thread.CurrentThread.SetProcessorAffinity (3);  
+#endif
+
             while (!isDone)
             {
                 // Update the AudioEngine - MUST call this every frame!!
@@ -381,6 +396,7 @@ namespace Spacewar
 
         protected override void Draw(GameTime gameTime)
         {
+            //Don't draw while the update thread is swapping buffers
             renderBlock.WaitOne();
             renderBlock.Reset();
             graphics.GraphicsDevice.Clear(ClearOptions.DepthBuffer, 
