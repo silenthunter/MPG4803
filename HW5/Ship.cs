@@ -425,6 +425,7 @@ namespace Spacewar
             retn.showThrust = this.showThrust;
             retn.scale = this.scale;
             retn.evolved = this.evolved;
+            retn.rotation = new Vector3(this.rotation.X, this.rotation.Y, this.rotation.Z);
 
             retn.inHyperspace = this.inHyperspace;
             retn.inRecovery = this.inRecovery;

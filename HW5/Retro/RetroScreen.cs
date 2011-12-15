@@ -81,5 +81,49 @@ namespace Spacewar
 
             bullets.OnCreateDevice();
         }
+
+        private void ReplaceScene(SceneItem sun, Ship one, Ship two,
+            Particles part, Projectiles proj)
+        {
+            scene.Remove(this.sun);
+            scene.Remove(ship1);
+            scene.Remove(ship2);
+            this.sun = sun;
+            this.ship1 = one;
+            this.ship2 = two;
+
+            scene.Add(ship1);
+            scene.Add(ship2);
+            scene.Add(sun);
+
+            this.particles = part;
+            if(particles != null)
+                scene.Add(particles);
+
+            this.bullets = proj;
+            scene.Add(bullets);
+        }
+
+        public override Screen Copy()
+        {
+            int tempHealth1 = SpacewarGame.Players[0].Health;
+            int tempHealth2 = SpacewarGame.Players[1].Health;
+
+            RetroScreen retn = new RetroScreen(this.game);
+
+            SpacewarGame.Players[0].Health = tempHealth1;
+            SpacewarGame.Players[1].Health = tempHealth2;
+
+            retn.bullets = this.bullets;
+            retn.particles = this.particles;
+
+            retn.paused = this.paused;
+            retn.player1Score = this.player1Score;
+            retn.player2Score = this.player2Score;
+            retn.backdrop = this.backdrop;//Doesn't change so I won't deep copy
+            retn.ReplaceScene(this.sun.Copy(), this.ship1.Copy(), this.ship2.Copy(), this.particles, this.bullets);
+
+            return retn;
+        }
     }
 }

@@ -433,7 +433,13 @@ namespace Spacewar
 
         public override Screen Copy()
         {
+            int tempHealth1 = SpacewarGame.Players[0].Health;
+            int tempHealth2 = SpacewarGame.Players[1].Health;
+
             EvolvedScreen retn = new EvolvedScreen(this.game);
+
+            SpacewarGame.Players[0].Health = tempHealth1;
+            SpacewarGame.Players[1].Health = tempHealth2;
 
             //TODO: Deep copy
             retn.asteroids = new Asteroid[this.asteroids.Length];
