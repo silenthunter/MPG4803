@@ -424,13 +424,13 @@ namespace Spacewar
                 gameLevel = 1;
 
                 currentScreen.Shutdown();
-                currentScreen = new SelectionScreen(this);
+                currentScreen = new SelectionScreen(this, true);
                 UpdateBuff.state = GameState.ShipSelection;
             }
             else if (UpdateBuff.state == GameState.PlayEvolved && NextState == GameState.ShipUpgrade)
             {
                 currentScreen.Shutdown();
-                currentScreen = new ShipUpgradeScreen(this);
+                currentScreen = new ShipUpgradeScreen(this, true);
                 UpdateBuff.state = GameState.ShipUpgrade;
             }
             else if ((UpdateBuff.state == GameState.ShipSelection || GameState == GameState.ShipUpgrade) && NextState == GameState.PlayEvolved)
@@ -453,7 +453,7 @@ namespace Spacewar
             else if (UpdateBuff.state == GameState.PlayEvolved && NextState == GameState.Victory)
             {
                 currentScreen.Shutdown();
-                currentScreen = new VictoryScreen(this);
+                currentScreen = new VictoryScreen(this, false);
                 UpdateBuff.state = GameState.Victory;
             }
             else

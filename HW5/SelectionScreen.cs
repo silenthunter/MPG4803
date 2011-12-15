@@ -38,11 +38,11 @@ namespace Spacewar
         /// <summary>
         /// Creates a new selection screen. Plays the music and initializes the models
         /// </summary>
-        public SelectionScreen(Game game)
+        public SelectionScreen(Game game, bool playMusic)
             : base(game)
         {
             //Start menu music
-            menuMusic = Sound.Play(Sounds.MenuMusic);
+            if(playMusic) menuMusic = Sound.Play(Sounds.MenuMusic);
 
             ships[0] = new SceneItem(game, new EvolvedShape(game, EvolvedShapes.Ship, PlayerIndex.One, selectedShip[0], selectedSkin[0], LightingType.Menu), new Vector3(-120, 0, 0));
             ships[0].Scale = new Vector3(.05f, .05f, .05f);
@@ -295,7 +295,7 @@ namespace Spacewar
 
         public override Screen Copy()
         {
-            SelectionScreen retn = new SelectionScreen(this.game);
+            SelectionScreen retn = new SelectionScreen(this.game, false);
 
             retn.selectedShip = new int[] { 0, 0 };
             this.selectedShip.CopyTo(retn.selectedShip, 0);

@@ -65,11 +65,11 @@ namespace Spacewar
         /// <summary>
         /// Creates the ShipUpgradeScreen
         /// </summary>
-        public ShipUpgradeScreen(Game game)
+        public ShipUpgradeScreen(Game game, bool playMusic)
             : base(game)
         {
             //Play the menu music
-            menuMusic = Sound.Play(Sounds.MenuMusic);
+            if(playMusic) menuMusic = Sound.Play(Sounds.MenuMusic);
             weapons[0] = new SceneItem(game, new EvolvedShape(game, EvolvedShapes.Weapon, PlayerIndex.One, (int)ProjectileType.Peashooter, LightingType.Menu), new Vector3(-170, -30, 0));
             weapons[0].Scale = new Vector3(.06f, .06f, .06f);
             scene.Add(weapons[0]);
@@ -341,9 +341,17 @@ namespace Spacewar
             weapons[1].ShapeItem.OnCreateDevice();
         }
 
+        private void ReplaceScene(SceneItem[] weapons)
+        {
+            scene.Clear();
+
+            scene.Add(weapons[0].Copy());
+            scene.Add(weapons[1].Copy());
+        }
+
         public override Screen Copy()
         {
-            ShipUpgradeScreen retn = new ShipUpgradeScreen(this.game);
+            ShipUpgradeScreen retn = new ShipUpgradeScreen(this.game, false);
             retn.flashEndTime = this.flashEndTime;
             retn.flashPercent = this.flashPercent;
             retn.flashTime = this.flashTime;
@@ -353,6 +361,8 @@ namespace Spacewar
 
             this.playerCashCount.CopyTo(retn.playerCashCount, 0);
             retn.playingTallySound = this.playingTallySound;
+
+            retn.ReplaceScene(this.weapons);
 
             return retn;
         }

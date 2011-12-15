@@ -29,10 +29,10 @@ namespace Spacewar
         /// <summary>
         /// Makes a new splash screen with the right texture, no timeout and will move to the logo screen
         /// </summary>
-        public VictoryScreen(Game game)
+        public VictoryScreen(Game game, bool playMusic)
             : base(game, victoryScreen, TimeSpan.Zero, GameState.LogoSplash)
         {
-            Sound.PlayCue(Sounds.TitleMusic);
+            if(playMusic) Sound.PlayCue(Sounds.TitleMusic);
 
             //Whoever won we need to render their ship.
             winningPlayerNumber = (SpacewarGame.Players[0].Score > SpacewarGame.Players[1].Score) ? 0 : 1;
@@ -86,6 +86,16 @@ namespace Spacewar
             base.OnCreateDevice();
 
             ship.ShapeItem.OnCreateDevice();
+        }
+
+        public override Screen Copy()
+        {
+            VictoryScreen retn = new VictoryScreen(this.game, false);
+            retn.scene.Remove(this.ship);
+            retn.ship = this.ship.Copy();
+            retn.scene.Add(retn.ship);
+
+            return retn;
         }
     }
 }
