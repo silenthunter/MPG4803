@@ -97,8 +97,15 @@ namespace Spacewar
             retn.yaw = this.yaw;
             retn.yawIncrement = this.yawIncrement;
             retn.destroyed = this.destroyed;
-            retn.shape = this.shape;
+            retn.shape = this.shape.Copy();
             retn.delete = this.delete;
+
+            retn.acceleration = new Vector3(this.acceleration.X, this.acceleration.Y, this.acceleration.Z);
+            retn.center = new Vector3(this.center.X, this.center.Y, this.center.Z);
+            retn.radius = this.radius;
+            retn.rotation = new Vector3(this.rotation.X, this.rotation.Y, this.rotation.Z);
+            retn.scale = new Vector3(this.scale.X, this.scale.Y, this.scale.Z);
+            retn.position = new Vector3(this.position.X, this.position.Y, this.position.Z);
 
             return retn;
         }

@@ -441,7 +441,6 @@ namespace Spacewar
             SpacewarGame.Players[0].Health = tempHealth1;
             SpacewarGame.Players[1].Health = tempHealth2;
 
-            //TODO: Deep copy
             retn.asteroids = new Asteroid[this.asteroids.Length];
 
             retn.levelTime = this.levelTime;

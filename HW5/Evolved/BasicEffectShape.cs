@@ -480,5 +480,24 @@ namespace Spacewar
         public static void Preload()
         {
         }
+
+        public override Shape Copy()
+        {
+            BasicEffectShape retn = new BasicEffectShape(this.GameInstance, this.shape, this.shapeNumber, LightingType.InGame);
+            retn.position = new Vector3(this.position.X, this.position.Y, this.position.Z);
+            retn.model = this.model;
+            retn.material = this.material;
+            retn.buffer = this.buffer;
+            retn.deviceCreated = this.deviceCreated;
+            retn.modelNames = this.modelNames;
+            retn.player = this.player;
+            retn.scene = this.scene;
+            retn.texture = this.texture;
+            retn.textureNames = this.textureNames;
+            retn.vertexDecl = this.vertexDecl;
+            retn.world = this.world;
+
+            return retn;
+        }
     }
 }

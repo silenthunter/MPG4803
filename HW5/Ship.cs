@@ -419,7 +419,6 @@ namespace Spacewar
 
         public new Ship Copy()
         {
-            //TODO:Complete
             Ship retn = new Ship(this.GameInstance, this.player, ShipClass.Pencil, 0, this.position, this.bullets, this.particles);
             retn.thrustFrame = this.thrustFrame;
             retn.showThrust = this.showThrust;

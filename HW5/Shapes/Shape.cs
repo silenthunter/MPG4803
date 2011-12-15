@@ -165,5 +165,10 @@ namespace Spacewar
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        public virtual Shape Copy()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
