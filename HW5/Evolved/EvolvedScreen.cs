@@ -450,13 +450,13 @@ namespace Spacewar
             retn.endTime = this.endTime;
 
             retn.bullets = this.bullets;
-            retn.particles = this.particles;
+            retn.particles = this.particles.Copy();
 
             retn.paused = this.paused;
             retn.player1Score = this.player1Score;
             retn.player2Score = this.player2Score;
             retn.backdrop = this.backdrop;//Doesn't change so I won't deep copy
-            retn.ReplaceScene(this.sun.Copy(), this.ship1.Copy(), this.ship2.Copy(), this.asteroids, this.particles, this.bullets);
+            retn.ReplaceScene(this.sun.Copy(), this.ship1.Copy(), this.ship2.Copy(), this.asteroids, retn.particles, this.bullets);
 
             return retn;
         }

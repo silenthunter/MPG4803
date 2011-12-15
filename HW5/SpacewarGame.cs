@@ -271,7 +271,7 @@ namespace Spacewar
         protected void UpdateThread()
         {
         #if XBOX  
-            Thread.CurrentThread.SetProcessorAffinity (2);  
+            Thread.CurrentThread.SetProcessorAffinity(new int[] { 3 });
         #endif
 
             int timeManager = 0;
@@ -374,7 +374,7 @@ namespace Spacewar
         protected void UpdateSound()
         {
 #if XBOX  
-            Thread.CurrentThread.SetProcessorAffinity (3);  
+            Thread.CurrentThread.SetProcessorAffinity(new int[] { 4 });
 #endif
 
             while (!isDone)
@@ -509,6 +509,7 @@ namespace Spacewar
 
         protected override void UnloadContent()
         {
+            isDone = true;
             base.UnloadContent();
 
             if (drawBuffer != null)

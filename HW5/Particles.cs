@@ -31,7 +31,7 @@ namespace Spacewar
         public Particles(Game game)
             : base(game)
         {
-            if (game != null)
+            if (game != null && batch == null)
             {
                 IGraphicsDeviceService graphicsService = (IGraphicsDeviceService)game.Services.GetService(typeof(IGraphicsDeviceService));
                 batch = new SpriteBatch(graphicsService.GraphicsDevice);
@@ -155,6 +155,22 @@ namespace Spacewar
         {
             IGraphicsDeviceService graphicsService = (IGraphicsDeviceService)GameInstance.Services.GetService(typeof(IGraphicsDeviceService));
             batch = new SpriteBatch(graphicsService.GraphicsDevice);
+        }
+
+        public new Particles Copy()
+        {
+            Particles retn = new Particles(this.GameInstance);
+
+            retn.acceleration = new Vector3(this.acceleration.X, this.acceleration.Y, this.acceleration.Z);
+            retn.center = new Vector3(this.center.X, this.center.Y, this.center.Z);
+            //retn.paused = this.paused;
+            retn.radius = this.radius;
+            retn.rotation = new Vector3(this.rotation.X, this.rotation.Y, this.rotation.Z);
+            retn.scale = new Vector3(this.scale.X, this.scale.Y, this.scale.Z);
+            foreach (SceneItem item in this)
+                retn.Add(item);
+
+            return retn;
         }
     }
 }
