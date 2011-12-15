@@ -102,7 +102,7 @@ namespace Spacewar
         private bool justWentFullScreen;
 
         private static GameBuffer UpdateBuff, DrawBuff;
-        private Thread updateThread;
+        private Thread updateThread, soundThread;
         private GameTime gameTime;
         private ManualResetEvent updateDone;
         private ManualResetEvent renderBlock;
@@ -221,6 +221,9 @@ namespace Spacewar
             //Initialise the sound
             Sound.Initialize();
 
+            soundThread = new Thread(new ThreadStart(UpdateSound));
+            soundThread.Start();
+
             Window.Title = Settings.WindowTitle;
 
             base.Initialize();
@@ -330,9 +333,6 @@ namespace Spacewar
                     changeState = UpdateBuff.screen.Update(time, elapsedTime);
                     renderBlock.Set();
 
-                    // Update the AudioEngine - MUST call this every frame!!
-                    Sound.Update();
-
                     //If either player presses start then reset the game
                     if (XInputHelper.GamePads[PlayerIndex.One].StartPressed ||
                         XInputHelper.GamePads[PlayerIndex.Two].StartPressed)
@@ -358,6 +358,15 @@ namespace Spacewar
                 }
             }
 
+        }
+
+        protected void UpdateSound()
+        {
+            while (!isDone)
+            {
+                // Update the AudioEngine - MUST call this every frame!!
+                Sound.Update();
+            }
         }
 
         protected override bool BeginDraw()
